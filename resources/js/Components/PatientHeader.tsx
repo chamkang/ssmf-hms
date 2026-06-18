@@ -23,13 +23,11 @@ export default function PatientHeader({ patient }: { patient: Patient }) {
                         <div className="mt-0.5 flex flex-wrap gap-x-3 gap-y-1 text-sm text-gray-500 dark:text-gray-400">
                             <span className="font-mono">{patient.mrn ?? '—'}</span>
                             {patient.sex && (
-                                <span>
-                                    {patient.sex === 'F' ? 'Féminin' : 'Masculin'}
-                                </span>
+                                <span>{patient.sex === 'F' ? 'Female' : 'Male'}</span>
                             )}
-                            {patient.age != null && <span>{patient.age} ans</span>}
+                            {patient.age != null && <span>{patient.age} yrs</span>}
                             {patient.blood_group && (
-                                <span>Groupe {patient.blood_group}</span>
+                                <span>Blood {patient.blood_group}</span>
                             )}
                             {patient.phone && <span>{patient.phone}</span>}
                         </div>
@@ -52,7 +50,7 @@ export default function PatientHeader({ patient }: { patient: Patient }) {
                         </div>
                     ) : (
                         <span className="rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-medium text-green-800 dark:bg-green-900/40 dark:text-green-200">
-                            Aucune allergie connue
+                            No known allergies
                         </span>
                     )}
                 </div>

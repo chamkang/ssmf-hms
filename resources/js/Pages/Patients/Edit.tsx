@@ -37,20 +37,20 @@ export default function Edit({ patient }: { patient: Patient }) {
         <AuthenticatedLayout
             header={
                 <h2 className="text-xl font-semibold leading-tight text-gray-800 dark:text-gray-200">
-                    Modifier — {patient.full_name}
+                    Edit — {patient.full_name}
                 </h2>
             }
         >
-            <Head title={`Modifier ${patient.full_name}`} />
+            <Head title={`Edit ${patient.full_name}`} />
             <div className="mx-auto max-w-4xl p-4 sm:p-6 lg:p-8">
                 <form onSubmit={submit} className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-700 dark:bg-gray-800">
                     <PatientForm data={data} setData={setData} errors={errors} />
                     <div className="mt-6 flex items-center justify-end gap-3">
                         <Link href={route('patients.show', patient.id)} className="text-sm text-gray-500 hover:underline">
-                            Annuler
+                            Cancel
                         </Link>
                         <button disabled={processing} className="rounded-md bg-[#0E9F63] px-5 py-2 text-sm font-semibold text-white hover:bg-[#0B7F50] disabled:opacity-50">
-                            Enregistrer
+                            Save
                         </button>
                     </div>
                 </form>

@@ -31,8 +31,8 @@ class AppointmentController extends Controller
     public function create()
     {
         return Inertia::render('Appointments/Create', [
-            'doctors' => Doctor::where('is_active', true)->orderBy('sort_order')->get(['id', 'full_name', 'specialty_fr']),
-            'services' => Service::where('is_active', true)->orderBy('sort_order')->get(['id', 'name_fr', 'duration_min']),
+            'doctors' => Doctor::where('is_active', true)->orderBy('sort_order')->get(['id', 'full_name', 'specialty_en']),
+            'services' => Service::where('is_active', true)->orderBy('sort_order')->get(['id', 'name_en', 'duration_min']),
         ]);
     }
 
@@ -55,7 +55,7 @@ class AppointmentController extends Controller
         ]);
 
         if (! in_array($data['time'], SlotEngine::available((int) $data['doctor_id'], $data['date']), true)) {
-            return back()->withErrors(['time' => 'Ce créneau n’est plus disponible.'])->withInput();
+            return back()->withErrors(['time' => 'This time slot is no longer available.'])->withInput();
         }
 
         $duration = (int) (Service::find($data['service_id'])?->duration_min ?? 20);
@@ -74,13 +74,13 @@ class AppointmentController extends Controller
             ]);
         } catch (QueryException $e) {
             if ((string) $e->getCode() === '23000') {
-                return back()->withErrors(['time' => 'Ce créneau vient d’être réservé.'])->withInput();
+                return back()->withErrors(['time' => 'This slot was just taken.'])->withInput();
             }
             throw $e;
         }
 
         return redirect()->route('appointments.index', ['date' => $data['date']])
-            ->with('success', "Rendez-vous {$appointment->reference} confirmé.");
+            ->with('success', "Appointment {$appointment->reference} confirmed.");
     }
 
     public function updateStatus(Request $request, Appointment $appointment)
@@ -90,6 +90,6 @@ class AppointmentController extends Controller
         ]);
         $appointment->update(['status' => $data['status']]);
 
-        return back()->with('success', 'Statut du rendez-vous mis à jour.');
+        return back()->with('success', 'Appointment status updated.');
     }
 }

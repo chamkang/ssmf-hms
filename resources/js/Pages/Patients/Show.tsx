@@ -32,7 +32,7 @@ export default function Show({ patient }: { patient: Patient }) {
         <AuthenticatedLayout
             header={
                 <h2 className="text-xl font-semibold leading-tight text-gray-800 dark:text-gray-200">
-                    Dossier patient
+                    Patient record
                 </h2>
             }
         >
@@ -48,25 +48,25 @@ export default function Show({ patient }: { patient: Patient }) {
 
                 <div className="flex justify-end">
                     <Link href={route('patients.edit', patient.id)} className="rounded-md bg-[#0A3D62] px-4 py-2 text-sm font-medium text-white hover:bg-[#0E4A78]">
-                        Modifier
+                        Edit
                     </Link>
                 </div>
 
                 <div className="grid grid-cols-1 gap-5 lg:grid-cols-2">
-                    <Card title="Coordonnées">
-                        <Row k="Téléphone" v={patient.phone} />
-                        <Row k="E-mail" v={patient.email} />
-                        <Row k="Adresse" v={patient.address} />
+                    <Card title="Contact">
+                        <Row k="Phone" v={patient.phone} />
+                        <Row k="Email" v={patient.email} />
+                        <Row k="Address" v={patient.address} />
                     </Card>
-                    <Card title="État civil">
-                        <Row k="Sexe" v={patient.sex === 'F' ? 'Féminin' : patient.sex === 'M' ? 'Masculin' : null} />
-                        <Row k="Naissance" v={patient.dob ? patient.dob.slice(0, 10) : null} />
-                        <Row k="Âge" v={patient.age != null ? `${patient.age} ans` : null} />
-                        <Row k="Groupe sanguin" v={patient.blood_group} />
+                    <Card title="Demographics">
+                        <Row k="Sex" v={patient.sex === 'F' ? 'Female' : patient.sex === 'M' ? 'Male' : null} />
+                        <Row k="Date of birth" v={patient.dob ? patient.dob.slice(0, 10) : null} />
+                        <Row k="Age" v={patient.age != null ? `${patient.age} yrs` : null} />
+                        <Row k="Blood group" v={patient.blood_group} />
                     </Card>
                     <Card title="Allergies">
                         {(patient.allergies?.length ?? 0) === 0 ? (
-                            <p className="text-sm text-gray-400">Aucune allergie connue.</p>
+                            <p className="text-sm text-gray-400">No known allergies.</p>
                         ) : (
                             <ul className="space-y-1 text-sm">
                                 {patient.allergies!.map((a) => (
@@ -78,9 +78,9 @@ export default function Show({ patient }: { patient: Patient }) {
                             </ul>
                         )}
                     </Card>
-                    <Card title="Antécédents">
+                    <Card title="Medical history">
                         {(patient.conditions?.length ?? 0) === 0 ? (
-                            <p className="text-sm text-gray-400">Aucun antécédent renseigné.</p>
+                            <p className="text-sm text-gray-400">No medical history recorded.</p>
                         ) : (
                             <ul className="space-y-1 text-sm">
                                 {patient.conditions!.map((c) => (
@@ -89,21 +89,21 @@ export default function Show({ patient }: { patient: Patient }) {
                             </ul>
                         )}
                     </Card>
-                    <Card title="Proche à prévenir">
+                    <Card title="Next of kin">
                         {nok ? (
                             <>
-                                <Row k="Nom" v={nok.name} />
-                                <Row k="Lien" v={nok.relationship} />
-                                <Row k="Téléphone" v={nok.phone} />
+                                <Row k="Name" v={nok.name} />
+                                <Row k="Relationship" v={nok.relationship} />
+                                <Row k="Phone" v={nok.phone} />
                             </>
                         ) : (
-                            <p className="text-sm text-gray-400">Non renseigné.</p>
+                            <p className="text-sm text-gray-400">Not provided.</p>
                         )}
                     </Card>
-                    <Card title="Chronologie">
+                    <Card title="Timeline">
                         <p className="text-sm text-gray-400">
-                            Les consultations, ordonnances et résultats apparaîtront ici
-                            (modules à venir).
+                            Consultations, prescriptions and results will appear here
+                            (modules coming soon).
                         </p>
                     </Card>
                 </div>

@@ -52,12 +52,14 @@ export interface Doctor {
     id: number;
     full_name: string;
     specialty_fr?: string | null;
+    specialty_en?: string | null;
     onmc?: string | null;
 }
 
 export interface Service {
     id: number;
-    name_fr: string;
+    name_fr?: string;
+    name_en?: string;
     duration_min?: number;
 }
 

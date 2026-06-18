@@ -35,16 +35,16 @@ export default function Create() {
         <AuthenticatedLayout
             header={
                 <h2 className="text-xl font-semibold leading-tight text-gray-800 dark:text-gray-200">
-                    Nouveau patient
+                    New patient
                 </h2>
             }
         >
-            <Head title="Nouveau patient" />
+            <Head title="New patient" />
             <div className="mx-auto max-w-4xl p-4 sm:p-6 lg:p-8">
                 {duplicates.length > 0 && (
                     <div className="mb-5 rounded-lg border border-amber-300 bg-amber-50 p-4 text-sm dark:border-amber-700 dark:bg-amber-900/30">
                         <p className="font-semibold text-amber-800 dark:text-amber-200">
-                            Patient(s) similaire(s) déjà enregistré(s) :
+                            Similar patient(s) already on file:
                         </p>
                         <ul className="mt-2 space-y-1">
                             {duplicates.map((d) => (
@@ -56,7 +56,7 @@ export default function Create() {
                             ))}
                         </ul>
                         <button onClick={createAnyway} className="mt-3 rounded-md bg-amber-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-amber-700">
-                            Créer quand même
+                            Create anyway
                         </button>
                     </div>
                 )}
@@ -65,10 +65,10 @@ export default function Create() {
                     <PatientForm data={data} setData={setData} errors={errors} />
                     <div className="mt-6 flex items-center justify-end gap-3">
                         <Link href={route('patients.index')} className="text-sm text-gray-500 hover:underline">
-                            Annuler
+                            Cancel
                         </Link>
                         <button disabled={processing} className="rounded-md bg-[#0E9F63] px-5 py-2 text-sm font-semibold text-white hover:bg-[#0B7F50] disabled:opacity-50">
-                            Enregistrer
+                            Save
                         </button>
                     </div>
                 </form>

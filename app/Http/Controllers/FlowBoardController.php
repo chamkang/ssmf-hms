@@ -61,7 +61,7 @@ class FlowBoardController extends Controller
             ]);
         }
 
-        return back()->with('success', 'Patient ajouté à la file d’attente.');
+        return back()->with('success', 'Patient added to the queue.');
     }
 
     public function advance(Request $request, Encounter $encounter)
@@ -75,6 +75,6 @@ class FlowBoardController extends Controller
         }
         $encounter->update($attrs);
 
-        return back()->with('success', 'File d’attente mise à jour.');
+        return back()->with('success', 'Queue updated.');
     }
 }

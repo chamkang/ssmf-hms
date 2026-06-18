@@ -31,7 +31,7 @@ export default function Authenticated({
                                     href={route('dashboard')}
                                     active={route().current('dashboard')}
                                 >
-                                    Tableau de bord
+                                    Dashboard
                                 </NavLink>
                                 <NavLink
                                     href={route('patients.index')}
@@ -43,13 +43,13 @@ export default function Authenticated({
                                     href={route('appointments.index')}
                                     active={route().current('appointments.*')}
                                 >
-                                    Rendez-vous
+                                    Appointments
                                 </NavLink>
                                 <NavLink
                                     href={route('flow-board')}
                                     active={route().current('flow-board')}
                                 >
-                                    File d’attente
+                                    Flow Board
                                 </NavLink>
                             </div>
                         </div>
@@ -153,7 +153,7 @@ export default function Authenticated({
                             href={route('dashboard')}
                             active={route().current('dashboard')}
                         >
-                            Tableau de bord
+                            Dashboard
                         </ResponsiveNavLink>
                         <ResponsiveNavLink
                             href={route('patients.index')}
@@ -165,13 +165,13 @@ export default function Authenticated({
                             href={route('appointments.index')}
                             active={route().current('appointments.*')}
                         >
-                            Rendez-vous
+                            Appointments
                         </ResponsiveNavLink>
                         <ResponsiveNavLink
                             href={route('flow-board')}
                             active={route().current('flow-board')}
                         >
-                            File d’attente
+                            Flow Board
                         </ResponsiveNavLink>
                     </div>
 

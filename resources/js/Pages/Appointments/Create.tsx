@@ -91,9 +91,9 @@ export default function Create({
 
     return (
         <AuthenticatedLayout
-            header={<h2 className="text-xl font-semibold leading-tight text-gray-800 dark:text-gray-200">Nouveau rendez-vous</h2>}
+            header={<h2 className="text-xl font-semibold leading-tight text-gray-800 dark:text-gray-200">New appointment</h2>}
         >
-            <Head title="Nouveau rendez-vous" />
+            <Head title="New appointment" />
             <div className="mx-auto max-w-3xl p-4 sm:p-6 lg:p-8">
                 <form onSubmit={submit} className="space-y-6 rounded-xl border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-700 dark:bg-gray-800">
                     {/* Patient */}
@@ -102,7 +102,7 @@ export default function Create({
                         <input
                             className={field}
                             value={q}
-                            placeholder="Nom, dossier ou téléphone…"
+                            placeholder="Name, record or phone…"
                             onChange={(e) => {
                                 setQ(e.target.value);
                                 setPicked(null);
@@ -122,18 +122,18 @@ export default function Create({
                             </ul>
                         )}
                         <p className="mt-1 text-xs text-gray-400">
-                            Patient introuvable ?{' '}
-                            <Link href={route('patients.create')} className="text-[#0E9F63] hover:underline">Enregistrer un nouveau patient</Link>.
+                            Patient not found?{' '}
+                            <Link href={route('patients.create')} className="text-[#0E9F63] hover:underline">Register a new patient</Link>.
                         </p>
                     </div>
 
                     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                         <div>
-                            <label className={label}>Médecin *</label>
+                            <label className={label}>Doctor *</label>
                             <select className={field} value={data.doctor_id} onChange={(e) => setData('doctor_id', e.target.value)}>
                                 <option value="">—</option>
                                 {doctors.map((d) => (
-                                    <option key={d.id} value={d.id}>{d.full_name}{d.specialty_fr ? ` — ${d.specialty_fr}` : ''}</option>
+                                    <option key={d.id} value={d.id}>{d.full_name}{d.specialty_en ? ` — ${d.specialty_en}` : ''}</option>
                                 ))}
                             </select>
                             <InputError message={errors.doctor_id} className="mt-1" />
@@ -143,7 +143,7 @@ export default function Create({
                             <select className={field} value={data.service_id} onChange={(e) => setData('service_id', e.target.value)}>
                                 <option value="">—</option>
                                 {services.map((s) => (
-                                    <option key={s.id} value={s.id}>{s.name_fr}</option>
+                                    <option key={s.id} value={s.id}>{s.name_en ?? s.name_fr}</option>
                                 ))}
                             </select>
                             <InputError message={errors.service_id} className="mt-1" />
@@ -157,13 +157,13 @@ export default function Create({
 
                     {/* Slots */}
                     <div>
-                        <label className={label}>Créneau *</label>
+                        <label className={label}>Time slot *</label>
                         {!data.doctor_id || !data.date ? (
-                            <p className="mt-1 text-sm text-gray-400">Choisissez un médecin et une date.</p>
+                            <p className="mt-1 text-sm text-gray-400">Choose a doctor and date.</p>
                         ) : loadingSlots ? (
-                            <p className="mt-1 text-sm text-gray-400">Chargement des créneaux…</p>
+                            <p className="mt-1 text-sm text-gray-400">Loading slots…</p>
                         ) : slots.length === 0 ? (
-                            <p className="mt-1 text-sm text-amber-600">Aucun créneau disponible ce jour-là.</p>
+                            <p className="mt-1 text-sm text-amber-600">No slots available on that day.</p>
                         ) : (
                             <div className="mt-2 flex flex-wrap gap-2">
                                 {slots.map((s) => (
@@ -187,9 +187,9 @@ export default function Create({
                     </div>
 
                     <div className="flex items-center justify-end gap-3">
-                        <Link href={route('appointments.index')} className="text-sm text-gray-500 hover:underline">Annuler</Link>
+                        <Link href={route('appointments.index')} className="text-sm text-gray-500 hover:underline">Cancel</Link>
                         <button disabled={processing || !data.patient_id || !data.time} className="rounded-md bg-[#0E9F63] px-5 py-2 text-sm font-semibold text-white hover:bg-[#0B7F50] disabled:opacity-50">
-                            Confirmer le rendez-vous
+                            Confirm appointment
                         </button>
                     </div>
                 </form>

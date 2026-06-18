@@ -36,45 +36,45 @@ export default function PatientForm({ data, setData, errors }: Props) {
         <div className="space-y-8">
             <section>
                 <h3 className="mb-3 text-sm font-semibold uppercase tracking-wide text-gray-500">
-                    Identité
+                    Identity
                 </h3>
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                     <div>
-                        <label className={label}>Prénom *</label>
+                        <label className={label}>First name *</label>
                         <input className={field} value={data.first_name} onChange={(e) => setData('first_name', e.target.value)} />
                         <InputError message={errors.first_name} className="mt-1" />
                     </div>
                     <div>
-                        <label className={label}>Nom *</label>
+                        <label className={label}>Last name *</label>
                         <input className={field} value={data.last_name} onChange={(e) => setData('last_name', e.target.value)} />
                         <InputError message={errors.last_name} className="mt-1" />
                     </div>
                     <div>
-                        <label className={label}>Sexe</label>
+                        <label className={label}>Sex</label>
                         <select className={field} value={data.sex ?? ''} onChange={(e) => setData('sex', e.target.value)}>
                             <option value="">—</option>
-                            <option value="F">Féminin</option>
-                            <option value="M">Masculin</option>
+                            <option value="F">Female</option>
+                            <option value="M">Male</option>
                         </select>
                         <InputError message={errors.sex} className="mt-1" />
                     </div>
                     <div>
-                        <label className={label}>Date de naissance</label>
+                        <label className={label}>Date of birth</label>
                         <input type="date" className={field} value={data.dob ?? ''} onChange={(e) => setData('dob', e.target.value)} />
                         <InputError message={errors.dob} className="mt-1" />
                     </div>
                     <div>
-                        <label className={label}>Situation matrimoniale</label>
+                        <label className={label}>Marital status</label>
                         <select className={field} value={data.marital_status ?? ''} onChange={(e) => setData('marital_status', e.target.value)}>
                             <option value="">—</option>
-                            <option value="single">Célibataire</option>
-                            <option value="married">Marié(e)</option>
-                            <option value="divorced">Divorcé(e)</option>
-                            <option value="widowed">Veuf / Veuve</option>
+                            <option value="single">Single</option>
+                            <option value="married">Married</option>
+                            <option value="divorced">Divorced</option>
+                            <option value="widowed">Widowed</option>
                         </select>
                     </div>
                     <div>
-                        <label className={label}>Groupe sanguin</label>
+                        <label className={label}>Blood group</label>
                         <input className={field} value={data.blood_group ?? ''} onChange={(e) => setData('blood_group', e.target.value)} placeholder="O+, A-…" />
                     </div>
                 </div>
@@ -82,21 +82,21 @@ export default function PatientForm({ data, setData, errors }: Props) {
 
             <section>
                 <h3 className="mb-3 text-sm font-semibold uppercase tracking-wide text-gray-500">
-                    Coordonnées
+                    Contact
                 </h3>
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                     <div>
-                        <label className={label}>Téléphone *</label>
+                        <label className={label}>Phone *</label>
                         <input className={field} value={data.phone} onChange={(e) => setData('phone', e.target.value)} placeholder="+237 6…" />
                         <InputError message={errors.phone} className="mt-1" />
                     </div>
                     <div>
-                        <label className={label}>E-mail</label>
+                        <label className={label}>Email</label>
                         <input type="email" className={field} value={data.email ?? ''} onChange={(e) => setData('email', e.target.value)} />
                         <InputError message={errors.email} className="mt-1" />
                     </div>
                     <div className="sm:col-span-2">
-                        <label className={label}>Adresse</label>
+                        <label className={label}>Address</label>
                         <input className={field} value={data.address ?? ''} onChange={(e) => setData('address', e.target.value)} />
                     </div>
                 </div>
@@ -108,24 +108,24 @@ export default function PatientForm({ data, setData, errors }: Props) {
                         Allergies
                     </h3>
                     <button type="button" onClick={addAllergy} className="text-sm font-medium text-[#0E9F63] hover:underline">
-                        + Ajouter
+                        + Add
                     </button>
                 </div>
                 {allergies.length === 0 && (
-                    <p className="text-sm text-gray-400">Aucune allergie renseignée.</p>
+                    <p className="text-sm text-gray-400">No allergies recorded.</p>
                 )}
                 <div className="space-y-2">
                     {allergies.map((a, i) => (
                         <div key={i} className="flex flex-wrap items-center gap-2">
                             <input className={`${field} mt-0 flex-1`} placeholder="Substance" value={a.substance} onChange={(e) => setAllergy(i, 'substance', e.target.value)} />
                             <select className={`${field} mt-0 w-44`} value={a.severity ?? ''} onChange={(e) => setAllergy(i, 'severity', e.target.value)}>
-                                <option value="">Gravité…</option>
-                                <option value="mild">Légère</option>
-                                <option value="moderate">Modérée</option>
-                                <option value="severe">Sévère</option>
+                                <option value="">Severity…</option>
+                                <option value="mild">Mild</option>
+                                <option value="moderate">Moderate</option>
+                                <option value="severe">Severe</option>
                             </select>
                             <button type="button" onClick={() => removeAllergy(i)} className="text-sm text-red-500 hover:underline">
-                                Retirer
+                                Remove
                             </button>
                         </div>
                     ))}
@@ -134,19 +134,19 @@ export default function PatientForm({ data, setData, errors }: Props) {
 
             <section>
                 <h3 className="mb-3 text-sm font-semibold uppercase tracking-wide text-gray-500">
-                    Proche à prévenir
+                    Next of kin
                 </h3>
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
                     <div>
-                        <label className={label}>Nom</label>
+                        <label className={label}>Name</label>
                         <input className={field} value={nok.name ?? ''} onChange={(e) => setNok('name', e.target.value)} />
                     </div>
                     <div>
-                        <label className={label}>Lien</label>
+                        <label className={label}>Relationship</label>
                         <input className={field} value={nok.relationship ?? ''} onChange={(e) => setNok('relationship', e.target.value)} />
                     </div>
                     <div>
-                        <label className={label}>Téléphone</label>
+                        <label className={label}>Phone</label>
                         <input className={field} value={nok.phone ?? ''} onChange={(e) => setNok('phone', e.target.value)} />
                     </div>
                 </div>

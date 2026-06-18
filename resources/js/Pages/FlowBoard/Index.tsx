@@ -2,18 +2,18 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Appointment, Encounter, PageProps } from '@/types';
 import { Head, router, usePage } from '@inertiajs/react';
 
-const stageFr: Record<string, string> = {
-    waiting: 'En attente',
-    vitals: 'Constantes',
-    with_doctor: 'En consultation',
-    lab: 'Laboratoire',
-    pharmacy: 'Pharmacie',
-    cashier: 'Caisse',
-    done: 'Terminé',
+const stageEn: Record<string, string> = {
+    waiting: 'Waiting',
+    vitals: 'Vitals',
+    with_doctor: 'With doctor',
+    lab: 'Laboratory',
+    pharmacy: 'Pharmacy',
+    cashier: 'Cashier',
+    done: 'Done',
 };
 
 const hm = (iso?: string | null) =>
-    iso ? new Date(iso).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }) : '';
+    iso ? new Date(iso).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }) : '';
 
 export default function Index({
     encounters,
@@ -37,9 +37,9 @@ export default function Index({
 
     return (
         <AuthenticatedLayout
-            header={<h2 className="text-xl font-semibold leading-tight text-gray-800 dark:text-gray-200">File d’attente — parcours patient</h2>}
+            header={<h2 className="text-xl font-semibold leading-tight text-gray-800 dark:text-gray-200">Flow Board — patient journey</h2>}
         >
-            <Head title="File d’attente" />
+            <Head title="Flow Board" />
             <div className="mx-auto max-w-[90rem] p-4 sm:p-6 lg:p-8">
                 {flash?.success && (
                     <div className="mb-4 rounded-lg bg-green-50 px-4 py-3 text-sm text-green-800 dark:bg-green-900/30 dark:text-green-200">
@@ -49,7 +49,7 @@ export default function Index({
 
                 {arrivals.length > 0 && (
                     <div className="mb-5 rounded-xl border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-700 dark:bg-gray-800">
-                        <h3 className="mb-2 text-sm font-semibold uppercase tracking-wide text-gray-500">Arrivées attendues aujourd’hui</h3>
+                        <h3 className="mb-2 text-sm font-semibold uppercase tracking-wide text-gray-500">Expected arrivals today</h3>
                         <div className="flex flex-wrap gap-2">
                             {arrivals.map((a) => (
                                 <button
@@ -57,7 +57,7 @@ export default function Index({
                                     onClick={() => router.post(route('flow-board.check-in'), { appointment_id: a.id })}
                                     className="rounded-lg border border-gray-300 px-3 py-1.5 text-sm hover:border-[#0E9F63] dark:border-gray-600 dark:text-gray-200"
                                 >
-                                    {hm(a.starts_at)} · {a.patient?.full_name} <span className="text-[#0E9F63]">+ Enregistrer</span>
+                                    {hm(a.starts_at)} · {a.patient?.full_name} <span className="text-[#0E9F63]">+ Check in</span>
                                 </button>
                             ))}
                         </div>
@@ -70,7 +70,7 @@ export default function Index({
                         return (
                             <div key={stage} className="rounded-xl bg-gray-100 p-3 dark:bg-gray-900/50">
                                 <div className="mb-2 flex items-center justify-between">
-                                    <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300">{stageFr[stage]}</h3>
+                                    <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300">{stageEn[stage]}</h3>
                                     <span className="rounded-full bg-white px-2 text-xs text-gray-500 dark:bg-gray-800">{list.length}</span>
                                 </div>
                                 <div className="space-y-2">
@@ -79,12 +79,12 @@ export default function Index({
                                             <div className="text-sm font-medium text-gray-900 dark:text-gray-100">{enc.patient?.full_name}</div>
                                             <div className="font-mono text-xs text-gray-400">{enc.patient?.mrn}</div>
                                             {(enc.patient?.allergies?.length ?? 0) > 0 && (
-                                                <div className="mt-1 text-xs font-medium text-red-600">⚠ Allergie</div>
+                                                <div className="mt-1 text-xs font-medium text-red-600">⚠ Allergy</div>
                                             )}
-                                            <div className="mt-1 text-xs text-gray-400">Arrivé {hm(enc.arrived_at)}</div>
+                                            <div className="mt-1 text-xs text-gray-400">Arrived {hm(enc.arrived_at)}</div>
                                             <div className="mt-2 flex gap-2">
                                                 <button onClick={() => advance(enc, nextStage(enc.stage))} className="rounded bg-[#0A3D62] px-2 py-1 text-xs font-medium text-white hover:bg-[#0E4A78]">
-                                                    {stage === 'cashier' ? 'Terminer' : '→ Suivant'}
+                                                    {stage === 'cashier' ? 'Finish' : '→ Next'}
                                                 </button>
                                             </div>
                                         </div>

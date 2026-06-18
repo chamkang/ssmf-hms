@@ -94,7 +94,7 @@ class PatientController extends Controller
         $this->syncChildren($patient, $data);
 
         return redirect()->route('patients.show', $patient)
-            ->with('success', "Patient enregistré — dossier {$patient->mrn}.");
+            ->with('success', "Patient registered — record {$patient->mrn}.");
     }
 
     public function show(Patient $patient)
@@ -118,7 +118,7 @@ class PatientController extends Controller
         $this->syncChildren($patient, $data, replace: true);
 
         return redirect()->route('patients.show', $patient)
-            ->with('success', 'Dossier patient mis à jour.');
+            ->with('success', 'Patient record updated.');
     }
 
     private function validateData(Request $request): array
