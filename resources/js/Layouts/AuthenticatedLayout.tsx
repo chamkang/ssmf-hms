@@ -31,7 +31,13 @@ export default function Authenticated({
                                     href={route('dashboard')}
                                     active={route().current('dashboard')}
                                 >
-                                    Dashboard
+                                    Tableau de bord
+                                </NavLink>
+                                <NavLink
+                                    href={route('patients.index')}
+                                    active={route().current('patients.*')}
+                                >
+                                    Patients
                                 </NavLink>
                             </div>
                         </div>
@@ -135,7 +141,13 @@ export default function Authenticated({
                             href={route('dashboard')}
                             active={route().current('dashboard')}
                         >
-                            Dashboard
+                            Tableau de bord
+                        </ResponsiveNavLink>
+                        <ResponsiveNavLink
+                            href={route('patients.index')}
+                            active={route().current('patients.*')}
+                        >
+                            Patients
                         </ResponsiveNavLink>
                     </div>
 

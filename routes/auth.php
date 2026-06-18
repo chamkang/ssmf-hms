@@ -12,10 +12,7 @@ use App\Http\Controllers\Auth\VerifyEmailController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware('guest')->group(function () {
-    Route::get('register', [RegisteredUserController::class, 'create'])
-        ->name('register');
-
-    Route::post('register', [RegisteredUserController::class, 'store']);
+    // Public registration is disabled — HMS accounts are created by an administrator (see Phase 1 user management).
 
     Route::get('login', [AuthenticatedSessionController::class, 'create'])
         ->name('login');
