@@ -48,6 +48,42 @@ export interface Patient {
     next_of_kin?: NextOfKin[];
 }
 
+export interface Doctor {
+    id: number;
+    full_name: string;
+    specialty_fr?: string | null;
+    onmc?: string | null;
+}
+
+export interface Service {
+    id: number;
+    name_fr: string;
+    duration_min?: number;
+}
+
+export interface Appointment {
+    id: number;
+    reference: string | null;
+    starts_at: string;
+    ends_at: string;
+    status: string;
+    source?: string;
+    notes?: string | null;
+    patient?: Patient;
+    doctor?: Doctor;
+    service?: Service;
+}
+
+export interface Encounter {
+    id: number;
+    stage: string;
+    status: string;
+    arrived_at?: string | null;
+    appointment_id?: number | null;
+    patient?: Patient;
+    doctor?: Doctor | null;
+}
+
 export type PageProps<
     T extends Record<string, unknown> = Record<string, unknown>,
 > = T & {

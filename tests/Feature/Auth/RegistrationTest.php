@@ -1,19 +1,14 @@
 <?php
 
-test('registration screen can be rendered', function () {
-    $response = $this->get('/register');
+// Public self-registration is intentionally disabled in the HMS —
+// staff accounts are created by an administrator (see routes/auth.php).
 
-    $response->assertStatus(200);
-});
-
-test('new users can register', function () {
-    $response = $this->post('/register', [
+test('the public registration route is disabled', function () {
+    $this->get('/register')->assertNotFound();
+    $this->post('/register', [
         'name' => 'Test User',
         'email' => 'test@example.com',
         'password' => 'password',
         'password_confirmation' => 'password',
-    ]);
-
-    $this->assertAuthenticated();
-    $response->assertRedirect(route('dashboard', absolute: false));
+    ])->assertNotFound();
 });

@@ -39,6 +39,18 @@ export default function Authenticated({
                                 >
                                     Patients
                                 </NavLink>
+                                <NavLink
+                                    href={route('appointments.index')}
+                                    active={route().current('appointments.*')}
+                                >
+                                    Rendez-vous
+                                </NavLink>
+                                <NavLink
+                                    href={route('flow-board')}
+                                    active={route().current('flow-board')}
+                                >
+                                    File d’attente
+                                </NavLink>
                             </div>
                         </div>
 
@@ -148,6 +160,18 @@ export default function Authenticated({
                             active={route().current('patients.*')}
                         >
                             Patients
+                        </ResponsiveNavLink>
+                        <ResponsiveNavLink
+                            href={route('appointments.index')}
+                            active={route().current('appointments.*')}
+                        >
+                            Rendez-vous
+                        </ResponsiveNavLink>
+                        <ResponsiveNavLink
+                            href={route('flow-board')}
+                            active={route().current('flow-board')}
+                        >
+                            File d’attente
                         </ResponsiveNavLink>
                     </div>
 

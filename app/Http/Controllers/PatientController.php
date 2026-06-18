@@ -33,6 +33,34 @@ class PatientController extends Controller
         ]);
     }
 
+    public function search(Request $request)
+    {
+        $q = trim((string) $request->query('q', ''));
+        if ($q === '') {
+            return response()->json([]);
+        }
+        $like = '%'.mb_strtolower($q).'%';
+
+        $results = Patient::query()
+            ->where(function ($w) use ($like, $q) {
+                $w->whereRaw('lower(first_name) like ?', [$like])
+                    ->orWhereRaw('lower(last_name) like ?', [$like])
+                    ->orWhereRaw('lower(mrn) like ?', [$like])
+                    ->orWhere('phone', 'like', "%{$q}%");
+            })
+            ->orderBy('last_name')
+            ->limit(10)
+            ->get(['id', 'mrn', 'first_name', 'last_name', 'phone'])
+            ->map(fn ($p) => [
+                'id' => $p->id,
+                'mrn' => $p->mrn,
+                'label' => "{$p->first_name} {$p->last_name} — {$p->mrn}",
+                'phone' => $p->phone,
+            ]);
+
+        return response()->json($results);
+    }
+
     public function create()
     {
         return Inertia::render('Patients/Create');
