@@ -101,7 +101,14 @@ class PatientController extends Controller
     {
         $patient->load(['allergies', 'conditions', 'nextOfKin']);
 
-        return Inertia::render('Patients/Show', ['patient' => $patient]);
+        $consultations = \App\Models\Consultation::where('patient_id', $patient->id)
+            ->with(['author', 'diagnoses', 'prescriptions.items'])
+            ->latest()->limit(20)->get();
+
+        return Inertia::render('Patients/Show', [
+            'patient' => $patient,
+            'consultations' => $consultations,
+        ]);
     }
 
     public function edit(Patient $patient)

@@ -1,6 +1,6 @@
 import PatientHeader from '@/Components/PatientHeader';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import { PageProps, Patient } from '@/types';
+import { Consultation, PageProps, Patient } from '@/types';
 import { Head, Link, usePage } from '@inertiajs/react';
 import { ReactNode } from 'react';
 
@@ -24,7 +24,15 @@ function Row({ k, v }: { k: string; v: ReactNode }) {
     );
 }
 
-export default function Show({ patient }: { patient: Patient }) {
+const dt = (iso?: string) => (iso ? new Date(iso).toLocaleString('en-GB', { dateStyle: 'medium', timeStyle: 'short' }) : '');
+
+export default function Show({
+    patient,
+    consultations = [],
+}: {
+    patient: Patient;
+    consultations?: Consultation[];
+}) {
     const flash = usePage<PageProps>().props.flash;
     const nok = patient.next_of_kin?.[0];
 
@@ -46,9 +54,12 @@ export default function Show({ patient }: { patient: Patient }) {
 
                 <PatientHeader patient={patient} />
 
-                <div className="flex justify-end">
-                    <Link href={route('patients.edit', patient.id)} className="rounded-md bg-[#0A3D62] px-4 py-2 text-sm font-medium text-white hover:bg-[#0E4A78]">
+                <div className="flex justify-end gap-2">
+                    <Link href={route('patients.edit', patient.id)} className="rounded-md border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 dark:border-gray-600 dark:text-gray-200 dark:hover:bg-gray-800">
                         Edit
+                    </Link>
+                    <Link href={route('consultations.start', patient.id)} className="rounded-md bg-[#0E9F63] px-4 py-2 text-sm font-semibold text-white hover:bg-[#0B7F50]">
+                        + New consultation
                     </Link>
                 </div>
 
@@ -78,17 +89,6 @@ export default function Show({ patient }: { patient: Patient }) {
                             </ul>
                         )}
                     </Card>
-                    <Card title="Medical history">
-                        {(patient.conditions?.length ?? 0) === 0 ? (
-                            <p className="text-sm text-gray-400">No medical history recorded.</p>
-                        ) : (
-                            <ul className="space-y-1 text-sm">
-                                {patient.conditions!.map((c) => (
-                                    <li key={c.id} className="text-gray-800 dark:text-gray-200">• {c.label}</li>
-                                ))}
-                            </ul>
-                        )}
-                    </Card>
                     <Card title="Next of kin">
                         {nok ? (
                             <>
@@ -100,12 +100,40 @@ export default function Show({ patient }: { patient: Patient }) {
                             <p className="text-sm text-gray-400">Not provided.</p>
                         )}
                     </Card>
-                    <Card title="Timeline">
-                        <p className="text-sm text-gray-400">
-                            Consultations, prescriptions and results will appear here
-                            (modules coming soon).
-                        </p>
-                    </Card>
+                </div>
+
+                {/* Timeline */}
+                <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm dark:border-gray-700 dark:bg-gray-800">
+                    <h3 className="mb-3 text-sm font-semibold uppercase tracking-wide text-gray-500">Timeline</h3>
+                    {consultations.length === 0 ? (
+                        <p className="text-sm text-gray-400">No consultations yet.</p>
+                    ) : (
+                        <ol className="space-y-4 border-l border-gray-200 pl-5 dark:border-gray-700">
+                            {consultations.map((c) => (
+                                <li key={c.id} className="relative">
+                                    <span className="absolute -left-[23px] top-1 h-3 w-3 rounded-full bg-[#0A3D62]" />
+                                    <div className="flex flex-wrap items-center gap-2 text-sm">
+                                        <span className="font-medium text-gray-900 dark:text-gray-100">{dt(c.created_at)}</span>
+                                        <span className="text-gray-500">· {c.author?.name ?? 'Clinician'}</span>
+                                        {c.signed_at && <span className="rounded-full bg-green-100 px-2 py-0.5 text-xs text-green-700">signed</span>}
+                                    </div>
+                                    {(c.diagnoses?.length ?? 0) > 0 && (
+                                        <div className="mt-1 text-sm text-gray-700 dark:text-gray-300">
+                                            <span className="text-gray-500">Dx:</span>{' '}
+                                            {c.diagnoses!.map((d) => d.label).join('; ')}
+                                        </div>
+                                    )}
+                                    {c.assessment && <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">{c.assessment}</p>}
+                                    {(c.prescriptions ?? []).map((rx) => (
+                                        <div key={rx.id} className="mt-1 text-sm">
+                                            <span className="text-gray-500">℞ {rx.items?.length ?? 0} item(s)</span>{' '}
+                                            <a href={route('prescriptions.print', rx.id)} target="_blank" rel="noreferrer" className="text-[#0E9F63] hover:underline">print</a>
+                                        </div>
+                                    ))}
+                                </li>
+                            ))}
+                        </ol>
+                    )}
                 </div>
             </div>
         </AuthenticatedLayout>

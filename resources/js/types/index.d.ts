@@ -86,6 +86,56 @@ export interface Encounter {
     doctor?: Doctor | null;
 }
 
+export interface Vital {
+    id?: number;
+    temp?: number | null;
+    bp_sys?: number | null;
+    bp_dia?: number | null;
+    pulse?: number | null;
+    resp?: number | null;
+    spo2?: number | null;
+    weight?: number | null;
+    height?: number | null;
+}
+
+export interface Diagnosis {
+    id?: number;
+    icd10_code?: string | null;
+    label: string;
+    is_primary?: boolean;
+}
+
+export interface PrescriptionItem {
+    id?: number;
+    drug_text: string;
+    dose?: string | null;
+    route?: string | null;
+    frequency?: string | null;
+    duration?: string | null;
+    quantity?: string | null;
+    instructions?: string | null;
+}
+
+export interface Prescription {
+    id: number;
+    issued_at?: string | null;
+    status?: string;
+    items?: PrescriptionItem[];
+}
+
+export interface Consultation {
+    id: number;
+    subjective?: string | null;
+    objective?: string | null;
+    assessment?: string | null;
+    plan?: string | null;
+    signed_at?: string | null;
+    created_at?: string;
+    author?: { name: string } | null;
+    diagnoses?: Diagnosis[];
+    prescriptions?: Prescription[];
+}
+
 export type PageProps<
     T extends Record<string, unknown> = Record<string, unknown>,
 > = T & {

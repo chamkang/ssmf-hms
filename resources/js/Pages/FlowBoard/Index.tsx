@@ -1,6 +1,6 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Appointment, Encounter, PageProps } from '@/types';
-import { Head, router, usePage } from '@inertiajs/react';
+import { Head, Link, router, usePage } from '@inertiajs/react';
 
 const stageEn: Record<string, string> = {
     waiting: 'Waiting',
@@ -82,10 +82,13 @@ export default function Index({
                                                 <div className="mt-1 text-xs font-medium text-red-600">⚠ Allergy</div>
                                             )}
                                             <div className="mt-1 text-xs text-gray-400">Arrived {hm(enc.arrived_at)}</div>
-                                            <div className="mt-2 flex gap-2">
+                                            <div className="mt-2 flex flex-wrap gap-2">
                                                 <button onClick={() => advance(enc, nextStage(enc.stage))} className="rounded bg-[#0A3D62] px-2 py-1 text-xs font-medium text-white hover:bg-[#0E4A78]">
                                                     {stage === 'cashier' ? 'Finish' : '→ Next'}
                                                 </button>
+                                                <Link href={route('consultations.cockpit', enc.id)} className="rounded border border-[#0E9F63] px-2 py-1 text-xs font-medium text-[#0E9F63] hover:bg-[#0E9F63] hover:text-white">
+                                                    Consult
+                                                </Link>
                                             </div>
                                         </div>
                                     ))}
