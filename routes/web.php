@@ -1,14 +1,17 @@
 <?php
 
 use App\Http\Controllers\AppointmentController;
+use App\Http\Controllers\AuditController;
 use App\Http\Controllers\BillingController;
 use App\Http\Controllers\ConsultationController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\FlowBoardController;
 use App\Http\Controllers\LabController;
 use App\Http\Controllers\PatientController;
 use App\Http\Controllers\PharmacyController;
 use App\Http\Controllers\PrescriptionController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\ReportController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -22,9 +25,7 @@ Route::get('/', function () {
     ]);
 });
 
-Route::get('/dashboard', function () {
-    return Inertia::render('Dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+Route::get('/dashboard', [DashboardController::class, 'index'])->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -70,6 +71,9 @@ Route::middleware('auth')->group(function () {
     Route::get('billing/{invoice}', [BillingController::class, 'show'])->name('billing.show');
     Route::post('billing/{invoice}/pay', [BillingController::class, 'pay'])->name('billing.pay');
     Route::get('billing/{invoice}/receipt', [BillingController::class, 'receipt'])->name('billing.receipt');
+
+    Route::get('reports', [ReportController::class, 'index'])->name('reports.index');
+    Route::get('audit', [AuditController::class, 'index'])->name('audit.index');
 });
 
 require __DIR__.'/auth.php';
