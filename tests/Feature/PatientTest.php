@@ -7,7 +7,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 uses(RefreshDatabase::class);
 
 test('an authenticated user can view the patients list', function () {
-    $user = User::factory()->create();
+    $user = staffUser();
 
     $this->actingAs($user)->get('/patients')->assertOk();
 });
@@ -17,7 +17,7 @@ test('guests are redirected away from patients', function () {
 });
 
 test('creating a patient assigns an MRN and stores allergies', function () {
-    $user = User::factory()->create();
+    $user = staffUser();
 
     $this->actingAs($user)->post('/patients', [
         'first_name' => 'Awa',
@@ -34,7 +34,7 @@ test('creating a patient assigns an MRN and stores allergies', function () {
 });
 
 test('duplicate phone is flagged and only created when forced', function () {
-    $user = User::factory()->create();
+    $user = staffUser();
 
     $this->actingAs($user)->post('/patients', [
         'first_name' => 'Awa', 'last_name' => 'Mballa', 'phone' => '+237699999999', 'language' => 'fr',

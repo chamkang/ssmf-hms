@@ -17,7 +17,7 @@ uses(RefreshDatabase::class);
 beforeEach(function () {
     $this->seed(LabTestSeeder::class);
     $this->seed(ClinicalRefSeeder::class);
-    $this->user = User::factory()->create();
+    $this->user = staffUser();
 });
 
 function aPatient(): Patient

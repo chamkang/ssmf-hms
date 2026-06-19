@@ -2,14 +2,39 @@ import ApplicationLogo from '@/Components/ApplicationLogo';
 import Dropdown from '@/Components/Dropdown';
 import NavLink from '@/Components/NavLink';
 import ResponsiveNavLink from '@/Components/ResponsiveNavLink';
+import { usePermissions } from '@/hooks/usePermissions';
 import { Link, usePage } from '@inertiajs/react';
 import { PropsWithChildren, ReactNode, useState } from 'react';
+
+type NavItem = {
+    label: string;
+    routeName: string;
+    activePattern: string;
+    permission?: string | string[];
+};
+
+const NAV_ITEMS: NavItem[] = [
+    { label: 'Dashboard', routeName: 'dashboard', activePattern: 'dashboard' },
+    { label: 'Patients', routeName: 'patients.index', activePattern: 'patients.*', permission: 'patients.view' },
+    { label: 'Appointments', routeName: 'appointments.index', activePattern: 'appointments.*', permission: 'appointments.manage' },
+    { label: 'Flow Board', routeName: 'flow-board', activePattern: 'flow-board', permission: 'reception.queue' },
+    { label: 'Laboratory', routeName: 'lab.index', activePattern: 'lab.*', permission: 'lab.results' },
+    { label: 'Pharmacy', routeName: 'pharmacy.queue', activePattern: 'pharmacy.*', permission: 'pharmacy.dispense' },
+    { label: 'Billing', routeName: 'billing.index', activePattern: 'billing.*', permission: 'billing.manage' },
+    { label: 'Reports', routeName: 'reports.index', activePattern: 'reports.*', permission: 'reports.view' },
+    { label: 'Audit', routeName: 'audit.index', activePattern: 'audit.*', permission: 'audit.view' },
+];
 
 export default function Authenticated({
     header,
     children,
 }: PropsWithChildren<{ header?: ReactNode }>) {
     const user = usePage().props.auth.user;
+    const { can } = usePermissions();
+
+    const navItems = NAV_ITEMS.filter(
+        (item) => !item.permission || can(item.permission),
+    );
 
     const [showingNavigationDropdown, setShowingNavigationDropdown] =
         useState(false);
@@ -27,54 +52,17 @@ export default function Authenticated({
                             </div>
 
                             <div className="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
-                                <NavLink
-                                    href={route('dashboard')}
-                                    active={route().current('dashboard')}
-                                >
-                                    Dashboard
-                                </NavLink>
-                                <NavLink
-                                    href={route('patients.index')}
-                                    active={route().current('patients.*')}
-                                >
-                                    Patients
-                                </NavLink>
-                                <NavLink
-                                    href={route('appointments.index')}
-                                    active={route().current('appointments.*')}
-                                >
-                                    Appointments
-                                </NavLink>
-                                <NavLink
-                                    href={route('flow-board')}
-                                    active={route().current('flow-board')}
-                                >
-                                    Flow Board
-                                </NavLink>
-                                <NavLink
-                                    href={route('lab.index')}
-                                    active={route().current('lab.*')}
-                                >
-                                    Laboratory
-                                </NavLink>
-                                <NavLink
-                                    href={route('pharmacy.queue')}
-                                    active={route().current('pharmacy.*')}
-                                >
-                                    Pharmacy
-                                </NavLink>
-                                <NavLink
-                                    href={route('billing.index')}
-                                    active={route().current('billing.*')}
-                                >
-                                    Billing
-                                </NavLink>
-                                <NavLink
-                                    href={route('reports.index')}
-                                    active={route().current('reports.*')}
-                                >
-                                    Reports
-                                </NavLink>
+                                {navItems.map((item) => (
+                                    <NavLink
+                                        key={item.routeName}
+                                        href={route(item.routeName)}
+                                        active={route().current(
+                                            item.activePattern,
+                                        )}
+                                    >
+                                        {item.label}
+                                    </NavLink>
+                                ))}
                             </div>
                         </div>
 
@@ -173,54 +161,15 @@ export default function Authenticated({
                     }
                 >
                     <div className="space-y-1 pb-3 pt-2">
-                        <ResponsiveNavLink
-                            href={route('dashboard')}
-                            active={route().current('dashboard')}
-                        >
-                            Dashboard
-                        </ResponsiveNavLink>
-                        <ResponsiveNavLink
-                            href={route('patients.index')}
-                            active={route().current('patients.*')}
-                        >
-                            Patients
-                        </ResponsiveNavLink>
-                        <ResponsiveNavLink
-                            href={route('appointments.index')}
-                            active={route().current('appointments.*')}
-                        >
-                            Appointments
-                        </ResponsiveNavLink>
-                        <ResponsiveNavLink
-                            href={route('flow-board')}
-                            active={route().current('flow-board')}
-                        >
-                            Flow Board
-                        </ResponsiveNavLink>
-                        <ResponsiveNavLink
-                            href={route('lab.index')}
-                            active={route().current('lab.*')}
-                        >
-                            Laboratory
-                        </ResponsiveNavLink>
-                        <ResponsiveNavLink
-                            href={route('pharmacy.queue')}
-                            active={route().current('pharmacy.*')}
-                        >
-                            Pharmacy
-                        </ResponsiveNavLink>
-                        <ResponsiveNavLink
-                            href={route('billing.index')}
-                            active={route().current('billing.*')}
-                        >
-                            Billing
-                        </ResponsiveNavLink>
-                        <ResponsiveNavLink
-                            href={route('reports.index')}
-                            active={route().current('reports.*')}
-                        >
-                            Reports
-                        </ResponsiveNavLink>
+                        {navItems.map((item) => (
+                            <ResponsiveNavLink
+                                key={item.routeName}
+                                href={route(item.routeName)}
+                                active={route().current(item.activePattern)}
+                            >
+                                {item.label}
+                            </ResponsiveNavLink>
+                        ))}
                     </div>
 
                     <div className="border-t border-gray-200 pb-1 pt-4 dark:border-gray-600">

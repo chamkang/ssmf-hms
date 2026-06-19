@@ -10,7 +10,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 uses(RefreshDatabase::class);
 
 test('a consultation saves SOAP, a diagnosis and a prescription, and can be signed', function () {
-    $user = User::factory()->create();
+    $user = staffUser();
     $patient = Patient::create([
         'first_name' => 'Awa', 'last_name' => 'Test', 'phone' => '+237600000010', 'language' => 'en',
     ]);
@@ -37,7 +37,7 @@ test('a consultation saves SOAP, a diagnosis and a prescription, and can be sign
 
 test('the ICD-10 lookup returns matches', function () {
     $this->seed(ClinicalRefSeeder::class);
-    $user = User::factory()->create();
+    $user = staffUser();
 
     $res = $this->actingAs($user)->getJson(route('lookup.icd10').'?q=hyperten');
     $res->assertOk();

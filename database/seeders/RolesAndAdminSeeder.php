@@ -41,6 +41,23 @@ class RolesAndAdminSeeder extends Seeder
         // Admin holds every permission.
         Role::findByName('admin', 'web')->syncPermissions(Permission::all());
 
+        // Permissions per role (TRD §2 — least privilege).
+        $map = [
+            'medical_director' => ['patients.view', 'patients.manage', 'appointments.manage', 'reception.queue', 'consultations.write', 'prescriptions.write', 'lab.results', 'pharmacy.dispense', 'billing.manage', 'reports.view', 'audit.view'],
+            'doctor' => ['patients.view', 'patients.manage', 'appointments.manage', 'reception.queue', 'consultations.write', 'prescriptions.write'],
+            'nurse' => ['patients.view', 'appointments.manage', 'reception.queue'],
+            'receptionist' => ['patients.view', 'patients.manage', 'appointments.manage', 'reception.queue', 'billing.manage'],
+            'cashier' => ['patients.view', 'billing.manage', 'reports.view'],
+            'laboratory' => ['patients.view', 'lab.results'],
+            'pharmacist' => ['patients.view', 'pharmacy.dispense'],
+            'embryologist' => ['patients.view', 'lab.results'],
+            'midwife' => ['patients.view', 'appointments.manage', 'reception.queue', 'consultations.write'],
+            'radiographer' => ['patients.view', 'lab.results'],
+        ];
+        foreach ($map as $role => $perms) {
+            Role::findByName($role, 'web')->syncPermissions($perms);
+        }
+
         // First administrator (password is auto-hashed by the User 'hashed' cast).
         $admin = User::firstOrCreate(
             ['email' => 'admin@saintsylvester.local'],

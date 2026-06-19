@@ -9,7 +9,7 @@ use Inertia\Testing\AssertableInertia as Assert;
 uses(RefreshDatabase::class);
 
 beforeEach(function () {
-    $this->user = User::factory()->create();
+    $this->user = staffUser();
 });
 
 test('dashboard, reports and audit pages load for an authenticated user', function () {

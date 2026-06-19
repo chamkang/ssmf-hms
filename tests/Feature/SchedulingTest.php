@@ -15,7 +15,7 @@ uses(RefreshDatabase::class);
 
 beforeEach(function () {
     $this->seed(ServicesDoctorsSeeder::class);
-    $this->user = User::factory()->create();
+    $this->user = staffUser();
 });
 
 function makePatient(string $last = 'Test'): Patient

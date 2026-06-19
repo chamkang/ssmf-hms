@@ -32,48 +32,75 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
-    Route::resource('patients', PatientController::class)->except(['destroy']);
-    Route::get('lookup/patients', [PatientController::class, 'search'])->name('patients.search');
+    // Patients — view (shared by reception/lab/cashier pickers) vs manage
+    Route::middleware('permission:patients.view')->group(function () {
+        Route::get('patients', [PatientController::class, 'index'])->name('patients.index');
+        Route::get('lookup/patients', [PatientController::class, 'search'])->name('patients.search');
+    });
+    Route::middleware('permission:patients.manage')->group(function () {
+        Route::get('patients/create', [PatientController::class, 'create'])->name('patients.create');
+        Route::post('patients', [PatientController::class, 'store'])->name('patients.store');
+        Route::get('patients/{patient}/edit', [PatientController::class, 'edit'])->name('patients.edit');
+        Route::match(['put', 'patch'], 'patients/{patient}', [PatientController::class, 'update'])->name('patients.update');
+    });
+    Route::get('patients/{patient}', [PatientController::class, 'show'])->name('patients.show')->middleware('permission:patients.view');
 
-    Route::get('appointments/slots', [AppointmentController::class, 'slots'])->name('appointments.slots');
-    Route::resource('appointments', AppointmentController::class)->only(['index', 'create', 'store']);
-    Route::patch('appointments/{appointment}/status', [AppointmentController::class, 'updateStatus'])->name('appointments.status');
+    // Appointments
+    Route::middleware('permission:appointments.manage')->group(function () {
+        Route::get('appointments/slots', [AppointmentController::class, 'slots'])->name('appointments.slots');
+        Route::get('appointments', [AppointmentController::class, 'index'])->name('appointments.index');
+        Route::get('appointments/create', [AppointmentController::class, 'create'])->name('appointments.create');
+        Route::post('appointments', [AppointmentController::class, 'store'])->name('appointments.store');
+        Route::patch('appointments/{appointment}/status', [AppointmentController::class, 'updateStatus'])->name('appointments.status');
+    });
 
-    Route::get('flow-board', [FlowBoardController::class, 'index'])->name('flow-board');
-    Route::post('flow-board/check-in', [FlowBoardController::class, 'checkIn'])->name('flow-board.check-in');
-    Route::patch('encounters/{encounter}/advance', [FlowBoardController::class, 'advance'])->name('encounters.advance');
+    // Reception / flow board
+    Route::middleware('permission:reception.queue')->group(function () {
+        Route::get('flow-board', [FlowBoardController::class, 'index'])->name('flow-board');
+        Route::post('flow-board/check-in', [FlowBoardController::class, 'checkIn'])->name('flow-board.check-in');
+        Route::patch('encounters/{encounter}/advance', [FlowBoardController::class, 'advance'])->name('encounters.advance');
+    });
 
-    Route::get('encounters/{encounter}/consultation', [ConsultationController::class, 'cockpit'])->name('consultations.cockpit');
-    Route::get('patients/{patient}/consult', [ConsultationController::class, 'start'])->name('consultations.start');
-    Route::post('consultations', [ConsultationController::class, 'store'])->name('consultations.store');
-    Route::get('lookup/icd10', [ConsultationController::class, 'icd10'])->name('lookup.icd10');
-    Route::get('lookup/drugs', [ConsultationController::class, 'drugs'])->name('lookup.drugs');
-    Route::get('prescriptions/{prescription}/print', [PrescriptionController::class, 'print'])->name('prescriptions.print');
+    // Consultations & e-prescribing
+    Route::middleware('permission:consultations.write')->group(function () {
+        Route::get('encounters/{encounter}/consultation', [ConsultationController::class, 'cockpit'])->name('consultations.cockpit');
+        Route::get('patients/{patient}/consult', [ConsultationController::class, 'start'])->name('consultations.start');
+        Route::post('consultations', [ConsultationController::class, 'store'])->name('consultations.store');
+        Route::get('lookup/icd10', [ConsultationController::class, 'icd10'])->name('lookup.icd10');
+        Route::get('lookup/drugs', [ConsultationController::class, 'drugs'])->name('lookup.drugs');
+        Route::get('prescriptions/{prescription}/print', [PrescriptionController::class, 'print'])->name('prescriptions.print');
+    });
 
     // Laboratory
-    Route::get('lab', [LabController::class, 'index'])->name('lab.index');
-    Route::get('lab/create', [LabController::class, 'create'])->name('lab.create');
-    Route::post('lab', [LabController::class, 'store'])->name('lab.store');
-    Route::get('lab/{lab}', [LabController::class, 'show'])->name('lab.show');
-    Route::patch('lab/{lab}/results', [LabController::class, 'results'])->name('lab.results');
+    Route::middleware('permission:lab.results')->group(function () {
+        Route::get('lab', [LabController::class, 'index'])->name('lab.index');
+        Route::get('lab/create', [LabController::class, 'create'])->name('lab.create');
+        Route::post('lab', [LabController::class, 'store'])->name('lab.store');
+        Route::get('lab/{lab}', [LabController::class, 'show'])->name('lab.show');
+        Route::patch('lab/{lab}/results', [LabController::class, 'results'])->name('lab.results');
+    });
 
     // Pharmacy
-    Route::get('pharmacy', [PharmacyController::class, 'queue'])->name('pharmacy.queue');
-    Route::get('pharmacy/inventory', [PharmacyController::class, 'inventory'])->name('pharmacy.inventory');
-    Route::post('pharmacy/inventory', [PharmacyController::class, 'addStock'])->name('pharmacy.add-stock');
-    Route::patch('prescriptions/{prescription}/dispense', [PharmacyController::class, 'dispense'])->name('pharmacy.dispense');
+    Route::middleware('permission:pharmacy.dispense')->group(function () {
+        Route::get('pharmacy', [PharmacyController::class, 'queue'])->name('pharmacy.queue');
+        Route::get('pharmacy/inventory', [PharmacyController::class, 'inventory'])->name('pharmacy.inventory');
+        Route::post('pharmacy/inventory', [PharmacyController::class, 'addStock'])->name('pharmacy.add-stock');
+        Route::patch('prescriptions/{prescription}/dispense', [PharmacyController::class, 'dispense'])->name('pharmacy.dispense');
+    });
 
     // Billing & cashier
-    Route::get('billing', [BillingController::class, 'index'])->name('billing.index');
-    Route::get('billing/create', [BillingController::class, 'create'])->name('billing.create');
-    Route::get('billing/report', [BillingController::class, 'report'])->name('billing.report');
-    Route::post('billing', [BillingController::class, 'store'])->name('billing.store');
-    Route::get('billing/{invoice}', [BillingController::class, 'show'])->name('billing.show');
-    Route::post('billing/{invoice}/pay', [BillingController::class, 'pay'])->name('billing.pay');
-    Route::get('billing/{invoice}/receipt', [BillingController::class, 'receipt'])->name('billing.receipt');
+    Route::middleware('permission:billing.manage')->group(function () {
+        Route::get('billing', [BillingController::class, 'index'])->name('billing.index');
+        Route::get('billing/create', [BillingController::class, 'create'])->name('billing.create');
+        Route::get('billing/report', [BillingController::class, 'report'])->name('billing.report');
+        Route::post('billing', [BillingController::class, 'store'])->name('billing.store');
+        Route::get('billing/{invoice}', [BillingController::class, 'show'])->name('billing.show');
+        Route::post('billing/{invoice}/pay', [BillingController::class, 'pay'])->name('billing.pay');
+        Route::get('billing/{invoice}/receipt', [BillingController::class, 'receipt'])->name('billing.receipt');
+    });
 
-    Route::get('reports', [ReportController::class, 'index'])->name('reports.index');
-    Route::get('audit', [AuditController::class, 'index'])->name('audit.index');
+    Route::get('reports', [ReportController::class, 'index'])->name('reports.index')->middleware('permission:reports.view');
+    Route::get('audit', [AuditController::class, 'index'])->name('audit.index')->middleware('permission:audit.view');
 });
 
 require __DIR__.'/auth.php';

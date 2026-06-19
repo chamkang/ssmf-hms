@@ -48,3 +48,15 @@ function something()
 {
     // ..
 }
+
+/** A persisted user with a seeded role (default: admin, which holds every permission). */
+function staffUser(string $role = 'admin'): \App\Models\User
+{
+    if (! \Spatie\Permission\Models\Role::where('name', $role)->exists()) {
+        (new \Database\Seeders\RolesAndAdminSeeder)->run();
+    }
+    $user = \App\Models\User::factory()->create();
+    $user->assignRole($role);
+
+    return $user;
+}
