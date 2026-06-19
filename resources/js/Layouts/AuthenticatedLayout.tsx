@@ -51,6 +51,18 @@ export default function Authenticated({
                                 >
                                     Flow Board
                                 </NavLink>
+                                <NavLink
+                                    href={route('lab.index')}
+                                    active={route().current('lab.*')}
+                                >
+                                    Laboratory
+                                </NavLink>
+                                <NavLink
+                                    href={route('pharmacy.queue')}
+                                    active={route().current('pharmacy.*')}
+                                >
+                                    Pharmacy
+                                </NavLink>
                             </div>
                         </div>
 
@@ -172,6 +184,18 @@ export default function Authenticated({
                             active={route().current('flow-board')}
                         >
                             Flow Board
+                        </ResponsiveNavLink>
+                        <ResponsiveNavLink
+                            href={route('lab.index')}
+                            active={route().current('lab.*')}
+                        >
+                            Laboratory
+                        </ResponsiveNavLink>
+                        <ResponsiveNavLink
+                            href={route('pharmacy.queue')}
+                            active={route().current('pharmacy.*')}
+                        >
+                            Pharmacy
                         </ResponsiveNavLink>
                     </div>
 

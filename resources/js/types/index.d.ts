@@ -119,8 +119,48 @@ export interface PrescriptionItem {
 export interface Prescription {
     id: number;
     issued_at?: string | null;
+    created_at?: string;
     status?: string;
     items?: PrescriptionItem[];
+    patient?: Patient;
+    author?: { name: string } | null;
+}
+
+export interface LabTest {
+    id: number;
+    code: string;
+    name: string;
+    price?: number;
+    unit?: string | null;
+    specimen?: string | null;
+}
+
+export interface LabOrderItem {
+    id: number;
+    name: string;
+    unit?: string | null;
+    ref_low?: number | string | null;
+    ref_high?: number | string | null;
+    value?: string | null;
+    flag?: string | null;
+}
+
+export interface LabOrder {
+    id: number;
+    reference: string | null;
+    status: string;
+    created_at?: string;
+    notes?: string | null;
+    patient?: Patient;
+    items?: LabOrderItem[];
+}
+
+export interface StockBatch {
+    id: number;
+    batch_no?: string | null;
+    quantity: number;
+    expiry_date?: string | null;
+    drug?: { id: number; name: string; strength?: string | null; form?: string | null };
 }
 
 export interface Consultation {

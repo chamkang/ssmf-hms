@@ -3,7 +3,9 @@
 use App\Http\Controllers\AppointmentController;
 use App\Http\Controllers\ConsultationController;
 use App\Http\Controllers\FlowBoardController;
+use App\Http\Controllers\LabController;
 use App\Http\Controllers\PatientController;
+use App\Http\Controllers\PharmacyController;
 use App\Http\Controllers\PrescriptionController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Foundation\Application;
@@ -45,6 +47,19 @@ Route::middleware('auth')->group(function () {
     Route::get('lookup/icd10', [ConsultationController::class, 'icd10'])->name('lookup.icd10');
     Route::get('lookup/drugs', [ConsultationController::class, 'drugs'])->name('lookup.drugs');
     Route::get('prescriptions/{prescription}/print', [PrescriptionController::class, 'print'])->name('prescriptions.print');
+
+    // Laboratory
+    Route::get('lab', [LabController::class, 'index'])->name('lab.index');
+    Route::get('lab/create', [LabController::class, 'create'])->name('lab.create');
+    Route::post('lab', [LabController::class, 'store'])->name('lab.store');
+    Route::get('lab/{lab}', [LabController::class, 'show'])->name('lab.show');
+    Route::patch('lab/{lab}/results', [LabController::class, 'results'])->name('lab.results');
+
+    // Pharmacy
+    Route::get('pharmacy', [PharmacyController::class, 'queue'])->name('pharmacy.queue');
+    Route::get('pharmacy/inventory', [PharmacyController::class, 'inventory'])->name('pharmacy.inventory');
+    Route::post('pharmacy/inventory', [PharmacyController::class, 'addStock'])->name('pharmacy.add-stock');
+    Route::patch('prescriptions/{prescription}/dispense', [PharmacyController::class, 'dispense'])->name('pharmacy.dispense');
 });
 
 require __DIR__.'/auth.php';
