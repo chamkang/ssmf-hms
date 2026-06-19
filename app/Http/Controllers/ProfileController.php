@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\ProfileUpdateRequest;
+use App\Services\TwoFactor;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -16,11 +17,25 @@ class ProfileController extends Controller
     /**
      * Display the user's profile form.
      */
-    public function edit(Request $request): Response
+    public function edit(Request $request, TwoFactor $totp): Response
     {
+        $user = $request->user();
+
+        // When the user has generated a secret but not yet confirmed it, surface
+        // the provisioning URI so the page can render the enrolment QR code.
+        $confirming = $user->two_factor_secret && ! $user->hasTwoFactorEnabled();
+
         return Inertia::render('Profile/Edit', [
-            'mustVerifyEmail' => $request->user() instanceof MustVerifyEmail,
+            'mustVerifyEmail' => $user instanceof MustVerifyEmail,
             'status' => session('status'),
+            'twoFactor' => [
+                'enabled' => $user->hasTwoFactorEnabled(),
+                'confirming' => $confirming,
+                'qr' => $confirming
+                    ? $totp->provisioningUri($user->two_factor_secret, $user->email, config('app.name'))
+                    : null,
+                'secret' => $confirming ? $user->two_factor_secret : null,
+            ],
         ]);
     }
 

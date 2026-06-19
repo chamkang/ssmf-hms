@@ -33,6 +33,13 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerate();
 
+        // Users with confirmed 2FA must clear the one-time-code challenge first.
+        if ($request->user()->hasTwoFactorEnabled()) {
+            $request->session()->forget('two_factor_passed');
+
+            return redirect()->route('two-factor.challenge');
+        }
+
         return redirect()->intended(route('dashboard', absolute: false));
     }
 

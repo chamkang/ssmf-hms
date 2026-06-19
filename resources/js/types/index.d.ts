@@ -228,5 +228,6 @@ export type PageProps<
         success?: string;
         error?: string;
         duplicates?: Patient[];
+        recoveryCodes?: string[];
     };
 };
