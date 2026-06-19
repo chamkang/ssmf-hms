@@ -176,6 +176,47 @@ export interface Consultation {
     prescriptions?: Prescription[];
 }
 
+export interface Tariff {
+    id: number;
+    label: string;
+    amount: number;
+}
+
+export interface InvoiceItem {
+    id?: number;
+    label: string;
+    qty: number;
+    unit_price: number;
+    amount: number;
+    source_type?: string | null;
+}
+
+export interface Payment {
+    id: number;
+    method: string;
+    provider?: string | null;
+    reference?: string | null;
+    amount: number;
+    tendered?: number | null;
+    change_due?: number | null;
+    received_at?: string | null;
+}
+
+export interface Invoice {
+    id: number;
+    reference: string | null;
+    status: string;
+    currency?: string;
+    notes?: string | null;
+    created_at?: string;
+    total: number;
+    paid: number;
+    balance: number;
+    patient?: Patient;
+    items?: InvoiceItem[];
+    payments?: Payment[];
+}
+
 export type PageProps<
     T extends Record<string, unknown> = Record<string, unknown>,
 > = T & {

@@ -63,6 +63,12 @@ export default function Authenticated({
                                 >
                                     Pharmacy
                                 </NavLink>
+                                <NavLink
+                                    href={route('billing.index')}
+                                    active={route().current('billing.*')}
+                                >
+                                    Billing
+                                </NavLink>
                             </div>
                         </div>
 
@@ -196,6 +202,12 @@ export default function Authenticated({
                             active={route().current('pharmacy.*')}
                         >
                             Pharmacy
+                        </ResponsiveNavLink>
+                        <ResponsiveNavLink
+                            href={route('billing.index')}
+                            active={route().current('billing.*')}
+                        >
+                            Billing
                         </ResponsiveNavLink>
                     </div>
 

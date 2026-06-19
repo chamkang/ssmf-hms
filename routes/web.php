@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AppointmentController;
+use App\Http\Controllers\BillingController;
 use App\Http\Controllers\ConsultationController;
 use App\Http\Controllers\FlowBoardController;
 use App\Http\Controllers\LabController;
@@ -60,6 +61,15 @@ Route::middleware('auth')->group(function () {
     Route::get('pharmacy/inventory', [PharmacyController::class, 'inventory'])->name('pharmacy.inventory');
     Route::post('pharmacy/inventory', [PharmacyController::class, 'addStock'])->name('pharmacy.add-stock');
     Route::patch('prescriptions/{prescription}/dispense', [PharmacyController::class, 'dispense'])->name('pharmacy.dispense');
+
+    // Billing & cashier
+    Route::get('billing', [BillingController::class, 'index'])->name('billing.index');
+    Route::get('billing/create', [BillingController::class, 'create'])->name('billing.create');
+    Route::get('billing/report', [BillingController::class, 'report'])->name('billing.report');
+    Route::post('billing', [BillingController::class, 'store'])->name('billing.store');
+    Route::get('billing/{invoice}', [BillingController::class, 'show'])->name('billing.show');
+    Route::post('billing/{invoice}/pay', [BillingController::class, 'pay'])->name('billing.pay');
+    Route::get('billing/{invoice}/receipt', [BillingController::class, 'receipt'])->name('billing.receipt');
 });
 
 require __DIR__.'/auth.php';

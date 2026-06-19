@@ -1,0 +1,130 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\Invoice;
+use App\Models\Payment;
+use App\Models\Tariff;
+use Illuminate\Http\Request;
+use Inertia\Inertia;
+
+class BillingController extends Controller
+{
+    public function index(Request $request)
+    {
+        $status = $request->query('status', 'open');
+
+        $invoices = Invoice::with(['patient', 'items', 'payments'])
+            ->when($status !== 'all', fn ($q) => $q->where('status', $status))
+            ->latest()
+            ->limit(100)
+            ->get();
+
+        return Inertia::render('Billing/Index', ['invoices' => $invoices, 'status' => $status]);
+    }
+
+    public function create()
+    {
+        return Inertia::render('Billing/Create', [
+            'tariffs' => Tariff::where('is_active', true)->orderBy('sort_order')->get(['id', 'label', 'amount']),
+        ]);
+    }
+
+    public function store(Request $request)
+    {
+        $data = $request->validate([
+            'patient_id' => 'required|exists:patients,id',
+            'items' => 'required|array|min:1',
+            'items.*.label' => 'required|string|max:160',
+            'items.*.qty' => 'required|integer|min:1',
+            'items.*.unit_price' => 'required|integer|min:0',
+            'items.*.source_type' => 'nullable|string|max:20',
+            'notes' => 'nullable|string|max:500',
+        ]);
+
+        $invoice = Invoice::create([
+            'patient_id' => $data['patient_id'],
+            'status' => 'open',
+            'currency' => 'XAF',
+            'notes' => $data['notes'] ?? null,
+        ]);
+
+        foreach ($data['items'] as $it) {
+            $invoice->items()->create([
+                'label' => $it['label'],
+                'qty' => $it['qty'],
+                'unit_price' => $it['unit_price'],
+                'amount' => $it['qty'] * $it['unit_price'],
+                'source_type' => $it['source_type'] ?? 'manual',
+            ]);
+        }
+
+        return redirect()->route('billing.show', $invoice)->with('success', "Invoice {$invoice->reference} created.");
+    }
+
+    public function show(Invoice $invoice)
+    {
+        $invoice->load(['patient', 'items', 'payments.invoice']);
+
+        return Inertia::render('Billing/Show', ['invoice' => $invoice]);
+    }
+
+    public function pay(Request $request, Invoice $invoice)
+    {
+        $data = $request->validate([
+            'method' => 'required|in:cash,momo',
+            'amount' => 'required|integer|min:1',
+            'tendered' => 'nullable|integer|min:0',
+            'reference' => 'nullable|string|max:120',
+        ]);
+
+        $change = null;
+        if ($data['method'] === 'cash' && ! empty($data['tendered'])) {
+            $change = max(0, (int) $data['tendered'] - (int) $data['amount']);
+        }
+
+        $invoice->payments()->create([
+            'method' => $data['method'],
+            'provider' => $data['method'] === 'momo' ? 'fapshi' : null,
+            'reference' => $data['reference'] ?? null,
+            'amount' => $data['amount'],
+            'tendered' => $data['tendered'] ?? null,
+            'change_due' => $change,
+            'received_by' => auth()->id(),
+            'received_at' => now(),
+        ]);
+
+        $invoice->refreshStatus();
+
+        $msg = 'Payment recorded.';
+        if ($change) {
+            $msg = 'Payment received. Change due: '.number_format($change).' FCFA.';
+        }
+
+        return back()->with('success', $msg);
+    }
+
+    public function receipt(Invoice $invoice)
+    {
+        $invoice->load(['patient', 'items', 'payments']);
+
+        return view('receipt', ['inv' => $invoice]);
+    }
+
+    public function report(Request $request)
+    {
+        $date = $request->query('date', now()->toDateString());
+        $payments = Payment::whereDate('received_at', $date)->get();
+        $byMethod = $payments->groupBy('method');
+        $sum = fn ($m) => (int) ($byMethod[$m]?->sum('amount') ?? 0);
+        $cnt = fn ($m) => (int) ($byMethod[$m]?->count() ?? 0);
+
+        return Inertia::render('Billing/Report', [
+            'date' => $date,
+            'cash' => ['count' => $cnt('cash'), 'total' => $sum('cash')],
+            'momo' => ['count' => $cnt('momo'), 'total' => $sum('momo')],
+            'total' => (int) $payments->sum('amount'),
+            'count' => $payments->count(),
+        ]);
+    }
+}
