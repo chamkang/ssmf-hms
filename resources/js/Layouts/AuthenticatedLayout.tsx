@@ -3,7 +3,8 @@ import Dropdown from '@/Components/Dropdown';
 import NavLink from '@/Components/NavLink';
 import ResponsiveNavLink from '@/Components/ResponsiveNavLink';
 import { usePermissions } from '@/hooks/usePermissions';
-import { Link, usePage } from '@inertiajs/react';
+import { useTrans } from '@/i18n';
+import { Link, router, usePage } from '@inertiajs/react';
 import { PropsWithChildren, ReactNode, useState } from 'react';
 
 type NavItem = {
@@ -14,16 +15,42 @@ type NavItem = {
 };
 
 const NAV_ITEMS: NavItem[] = [
-    { label: 'Dashboard', routeName: 'dashboard', activePattern: 'dashboard' },
-    { label: 'Patients', routeName: 'patients.index', activePattern: 'patients.*', permission: 'patients.view' },
-    { label: 'Appointments', routeName: 'appointments.index', activePattern: 'appointments.*', permission: 'appointments.manage' },
-    { label: 'Flow Board', routeName: 'flow-board', activePattern: 'flow-board', permission: 'reception.queue' },
-    { label: 'Laboratory', routeName: 'lab.index', activePattern: 'lab.*', permission: 'lab.results' },
-    { label: 'Pharmacy', routeName: 'pharmacy.queue', activePattern: 'pharmacy.*', permission: 'pharmacy.dispense' },
-    { label: 'Billing', routeName: 'billing.index', activePattern: 'billing.*', permission: 'billing.manage' },
-    { label: 'Reports', routeName: 'reports.index', activePattern: 'reports.*', permission: 'reports.view' },
-    { label: 'Audit', routeName: 'audit.index', activePattern: 'audit.*', permission: 'audit.view' },
+    { label: 'nav.dashboard', routeName: 'dashboard', activePattern: 'dashboard' },
+    { label: 'nav.patients', routeName: 'patients.index', activePattern: 'patients.*', permission: 'patients.view' },
+    { label: 'nav.appointments', routeName: 'appointments.index', activePattern: 'appointments.*', permission: 'appointments.manage' },
+    { label: 'nav.flow_board', routeName: 'flow-board', activePattern: 'flow-board', permission: 'reception.queue' },
+    { label: 'nav.laboratory', routeName: 'lab.index', activePattern: 'lab.*', permission: 'lab.results' },
+    { label: 'nav.pharmacy', routeName: 'pharmacy.queue', activePattern: 'pharmacy.*', permission: 'pharmacy.dispense' },
+    { label: 'nav.billing', routeName: 'billing.index', activePattern: 'billing.*', permission: 'billing.manage' },
+    { label: 'nav.reports', routeName: 'reports.index', activePattern: 'reports.*', permission: 'reports.view' },
+    { label: 'nav.audit', routeName: 'audit.index', activePattern: 'audit.*', permission: 'audit.view' },
 ];
+
+function LanguageToggle() {
+    const { locale } = useTrans();
+    const switchTo = (l: string) =>
+        router.post(route('locale.update', l), {}, { preserveScroll: true });
+
+    return (
+        <div className="inline-flex overflow-hidden rounded-md border border-gray-200 text-xs dark:border-gray-700">
+            {['en', 'fr'].map((l) => (
+                <button
+                    key={l}
+                    type="button"
+                    onClick={() => switchTo(l)}
+                    className={
+                        'px-2 py-1 font-medium uppercase ' +
+                        (locale === l
+                            ? 'bg-gray-800 text-white dark:bg-gray-200 dark:text-gray-900'
+                            : 'text-gray-500 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-700')
+                    }
+                >
+                    {l}
+                </button>
+            ))}
+        </div>
+    );
+}
 
 export default function Authenticated({
     header,
@@ -31,6 +58,7 @@ export default function Authenticated({
 }: PropsWithChildren<{ header?: ReactNode }>) {
     const user = usePage().props.auth.user;
     const { can } = usePermissions();
+    const { t } = useTrans();
 
     const navItems = NAV_ITEMS.filter(
         (item) => !item.permission || can(item.permission),
@@ -60,13 +88,14 @@ export default function Authenticated({
                                             item.activePattern,
                                         )}
                                     >
-                                        {item.label}
+                                        {t(item.label)}
                                     </NavLink>
                                 ))}
                             </div>
                         </div>
 
-                        <div className="hidden sm:ms-6 sm:flex sm:items-center">
+                        <div className="hidden sm:ms-6 sm:flex sm:items-center sm:gap-3">
+                            <LanguageToggle />
                             <div className="relative ms-3">
                                 <Dropdown>
                                     <Dropdown.Trigger>
@@ -97,14 +126,14 @@ export default function Authenticated({
                                         <Dropdown.Link
                                             href={route('profile.edit')}
                                         >
-                                            Profile
+                                            {t('account.profile')}
                                         </Dropdown.Link>
                                         <Dropdown.Link
                                             href={route('logout')}
                                             method="post"
                                             as="button"
                                         >
-                                            Log Out
+                                            {t('account.logout')}
                                         </Dropdown.Link>
                                     </Dropdown.Content>
                                 </Dropdown>
@@ -167,7 +196,7 @@ export default function Authenticated({
                                 href={route(item.routeName)}
                                 active={route().current(item.activePattern)}
                             >
-                                {item.label}
+                                {t(item.label)}
                             </ResponsiveNavLink>
                         ))}
                     </div>
@@ -184,15 +213,21 @@ export default function Authenticated({
 
                         <div className="mt-3 space-y-1">
                             <ResponsiveNavLink href={route('profile.edit')}>
-                                Profile
+                                {t('account.profile')}
                             </ResponsiveNavLink>
                             <ResponsiveNavLink
                                 method="post"
                                 href={route('logout')}
                                 as="button"
                             >
-                                Log Out
+                                {t('account.logout')}
                             </ResponsiveNavLink>
+                            <div className="px-4 pt-3">
+                                <div className="mb-1 text-xs font-medium uppercase text-gray-400">
+                                    {t('account.language')}
+                                </div>
+                                <LanguageToggle />
+                            </div>
                         </div>
                     </div>
                 </div>

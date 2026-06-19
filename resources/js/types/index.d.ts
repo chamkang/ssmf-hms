@@ -224,6 +224,7 @@ export type PageProps<
         user: User;
         permissions: string[];
     };
+    locale: string;
     flash: {
         success?: string;
         error?: string;
