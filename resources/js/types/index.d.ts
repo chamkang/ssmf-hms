@@ -389,6 +389,22 @@ export interface Admission {
     notes?: AdmissionNote[];
 }
 
+export interface IntakeBooking {
+    id: number;
+    web_reference?: string | null;
+    full_name: string;
+    first_name: string;
+    last_name: string;
+    phone?: string | null;
+    email?: string | null;
+    preferred_at?: string | null;
+    reason?: string | null;
+    status: string;
+    patient?: Patient;
+    service?: Service | null;
+    doctor?: Doctor | null;
+}
+
 export type PageProps<
     T extends Record<string, unknown> = Record<string, unknown>,
 > = T & {

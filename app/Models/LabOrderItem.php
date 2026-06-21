@@ -15,4 +15,9 @@ class LabOrderItem extends Model
     {
         return $this->belongsTo(LabOrder::class, 'lab_order_id');
     }
+
+    public function labTest(): BelongsTo
+    {
+        return $this->belongsTo(LabTest::class, 'lab_test_id');
+    }
 }

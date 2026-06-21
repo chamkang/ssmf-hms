@@ -1,4 +1,5 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
+import { useTrans } from '@/i18n';
 import { PageProps, Patient } from '@/types';
 import { Head, Link, router, usePage } from '@inertiajs/react';
 import { FormEvent, useState } from 'react';
@@ -18,6 +19,7 @@ export default function Index({
 }) {
     const [q, setQ] = useState(filters.q ?? '');
     const flash = usePage<PageProps>().props.flash;
+    const { t } = useTrans();
 
     const search = (e: FormEvent) => {
         e.preventDefault();
@@ -28,11 +30,11 @@ export default function Index({
         <AuthenticatedLayout
             header={
                 <h2 className="text-xl font-semibold leading-tight text-gray-800 dark:text-gray-200">
-                    Patients
+                    {t('patients.title')}
                 </h2>
             }
         >
-            <Head title="Patients" />
+            <Head title={t('patients.title')} />
             <div className="mx-auto max-w-7xl p-4 sm:p-6 lg:p-8">
                 {flash?.success && (
                     <div className="mb-4 rounded-lg bg-green-50 px-4 py-3 text-sm text-green-800 dark:bg-green-900/30 dark:text-green-200">
@@ -45,18 +47,18 @@ export default function Index({
                         <input
                             value={q}
                             onChange={(e) => setQ(e.target.value)}
-                            placeholder="Search (name, record, phone)…"
+                            placeholder={t('patients.search_placeholder')}
                             className="w-72 rounded-md border-gray-300 text-sm shadow-sm focus:border-[#0E9F63] focus:ring-[#0E9F63] dark:border-gray-700 dark:bg-gray-900 dark:text-gray-200"
                         />
                         <button className="rounded-md bg-[#0A3D62] px-4 py-2 text-sm font-medium text-white hover:bg-[#0E4A78]">
-                            Search
+                            {t('action.search')}
                         </button>
                     </form>
                     <Link
                         href={route('patients.create')}
                         className="rounded-md bg-[#0E9F63] px-4 py-2 text-sm font-semibold text-white hover:bg-[#0B7F50]"
                     >
-                        + New patient
+                        + {t('patients.new')}
                     </Link>
                 </div>
 
@@ -64,10 +66,10 @@ export default function Index({
                     <table className="min-w-full divide-y divide-gray-200 text-sm dark:divide-gray-700">
                         <thead className="bg-gray-50 dark:bg-gray-900/40">
                             <tr className="text-left text-xs uppercase tracking-wide text-gray-500">
-                                <th className="px-4 py-3">Record</th>
-                                <th className="px-4 py-3">Name</th>
-                                <th className="px-4 py-3">Sex / Age</th>
-                                <th className="px-4 py-3">Phone</th>
+                                <th className="px-4 py-3">{t('patients.record')}</th>
+                                <th className="px-4 py-3">{t('patients.name')}</th>
+                                <th className="px-4 py-3">{t('patients.sex_age')}</th>
+                                <th className="px-4 py-3">{t('patients.phone')}</th>
                                 <th className="px-4 py-3"></th>
                             </tr>
                         </thead>
@@ -75,7 +77,7 @@ export default function Index({
                             {patients.data.length === 0 && (
                                 <tr>
                                     <td colSpan={5} className="px-4 py-10 text-center text-gray-500">
-                                        No patients found.
+                                        {t('patients.none')}
                                     </td>
                                 </tr>
                             )}
@@ -85,12 +87,12 @@ export default function Index({
                                     <td className="px-4 py-3 font-medium text-gray-900 dark:text-gray-100">{p.full_name}</td>
                                     <td className="px-4 py-3 text-gray-600 dark:text-gray-400">
                                         {(p.sex ?? '—')}
-                                        {p.age != null ? ` · ${p.age} yrs` : ''}
+                                        {p.age != null ? ` · ${p.age} ${t('patients.years')}` : ''}
                                     </td>
                                     <td className="px-4 py-3 text-gray-600 dark:text-gray-400">{p.phone ?? '—'}</td>
                                     <td className="px-4 py-3 text-right">
                                         <Link href={route('patients.show', p.id)} className="font-medium text-[#0E9F63] hover:underline">
-                                            View
+                                            {t('patients.view')}
                                         </Link>
                                     </td>
                                 </tr>

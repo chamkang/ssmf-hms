@@ -3,7 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\Invoice;
+use App\Models\InvoiceItem;
+use App\Models\LabOrder;
 use App\Models\Payment;
+use App\Models\Prescription;
 use App\Models\Tariff;
 use App\Services\FapshiClient;
 use Illuminate\Http\Request;
@@ -31,6 +34,45 @@ class BillingController extends Controller
         ]);
     }
 
+    /**
+     * Suggest unbilled charges for a patient — completed lab orders and
+     * dispensed prescriptions not yet attached to any invoice line.
+     */
+    public function chargeable(Request $request)
+    {
+        $patientId = (int) $request->query('patient_id');
+        if (! $patientId) {
+            return response()->json([]);
+        }
+
+        $lines = [];
+
+        $billedLab = InvoiceItem::where('source_type', 'lab')->whereNotNull('source_id')->pluck('source_id')->all();
+        $labOrders = LabOrder::with('items.labTest:id,price')
+            ->where('patient_id', $patientId)
+            ->whereIn('status', ['resulted', 'validated'])
+            ->whereNotIn('id', $billedLab)
+            ->get();
+        foreach ($labOrders as $o) {
+            $amount = (int) $o->items->sum(fn ($it) => (int) ($it->labTest->price ?? 0));
+            $lines[] = ['label' => "Lab — {$o->reference}", 'qty' => 1, 'unit_price' => $amount, 'source_type' => 'lab', 'source_id' => $o->id];
+        }
+
+        $billedRx = InvoiceItem::where('source_type', 'pharmacy')->whereNotNull('source_id')->pluck('source_id')->all();
+        $prescriptions = Prescription::with('items.drug:id,price')
+            ->where('patient_id', $patientId)
+            ->where('status', 'dispensed')
+            ->whereNotIn('id', $billedRx)
+            ->get();
+        foreach ($prescriptions as $rx) {
+            $amount = (int) $rx->items->sum(fn ($it) => (int) ($it->drug->price ?? 0));
+            $n = $rx->items->count();
+            $lines[] = ['label' => "Pharmacy — Rx #{$rx->id} ({$n} item".($n === 1 ? '' : 's').')', 'qty' => 1, 'unit_price' => $amount, 'source_type' => 'pharmacy', 'source_id' => $rx->id];
+        }
+
+        return response()->json($lines);
+    }
+
     public function store(Request $request)
     {
         $data = $request->validate([
@@ -40,6 +82,7 @@ class BillingController extends Controller
             'items.*.qty' => 'required|integer|min:1',
             'items.*.unit_price' => 'required|integer|min:0',
             'items.*.source_type' => 'nullable|string|max:20',
+            'items.*.source_id' => 'nullable|integer',
             'notes' => 'nullable|string|max:500',
         ]);
 
@@ -57,6 +100,7 @@ class BillingController extends Controller
                 'unit_price' => $it['unit_price'],
                 'amount' => $it['qty'] * $it['unit_price'],
                 'source_type' => $it['source_type'] ?? 'manual',
+                'source_id' => $it['source_id'] ?? null,
             ]);
         }
 

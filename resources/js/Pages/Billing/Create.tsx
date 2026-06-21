@@ -16,6 +16,7 @@ export default function Create({ tariffs }: { tariffs: Tariff[] }) {
     const [picked, setPicked] = useState<PatientHit | null>(null);
     const [mLabel, setMLabel] = useState('');
     const [mPrice, setMPrice] = useState('');
+    const [suggested, setSuggested] = useState<any[]>([]);
 
     useEffect(() => {
         if (picked || q.trim().length < 2) { setHits([]); return; }
@@ -27,8 +28,19 @@ export default function Create({ tariffs }: { tariffs: Tariff[] }) {
         return () => { clearTimeout(t); ctrl.abort(); };
     }, [q, picked]);
 
-    const addLine = (label: string, unit_price: number, source: string) =>
-        setData('items', [...data.items, { label, qty: 1, unit_price, source_type: source }]);
+    // When a patient is chosen, suggest their unbilled lab/pharmacy charges.
+    useEffect(() => {
+        if (!data.patient_id) { setSuggested([]); return; }
+        fetch(route('billing.chargeable') + '?patient_id=' + data.patient_id, { headers: { Accept: 'application/json' }, credentials: 'same-origin' })
+            .then((r) => r.json()).then(setSuggested).catch(() => {});
+    }, [data.patient_id]);
+
+    const addLine = (label: string, unit_price: number, source: string, source_id: number | null = null) =>
+        setData('items', [...data.items, { label, qty: 1, unit_price, source_type: source, source_id }]);
+    const addSuggested = (s: any) => {
+        addLine(s.label, s.unit_price, s.source_type, s.source_id);
+        setSuggested(suggested.filter((x) => !(x.source_type === s.source_type && x.source_id === s.source_id)));
+    };
     const setQty = (i: number, qty: number) =>
         setData('items', data.items.map((it: any, idx: number) => (idx === i ? { ...it, qty: Math.max(1, qty) } : it)));
     const removeLine = (i: number) => setData('items', data.items.filter((_: any, idx: number) => idx !== i));
@@ -58,6 +70,24 @@ export default function Create({ tariffs }: { tariffs: Tariff[] }) {
                             </ul>
                         )}
                     </div>
+
+                    {suggested.length > 0 && (
+                        <div className="rounded-lg border border-[#0E9F63]/30 bg-green-50/60 p-3 dark:border-green-700 dark:bg-green-900/20">
+                            <div className="mb-2 flex items-center justify-between">
+                                <span className="text-sm font-medium text-gray-700 dark:text-gray-200">Unbilled lab &amp; pharmacy charges</span>
+                                <button type="button" onClick={() => { suggested.forEach(addSuggested); }} className="text-xs font-medium text-[#0E9F63] hover:underline">Add all</button>
+                            </div>
+                            <div className="space-y-1">
+                                {suggested.map((s) => (
+                                    <button key={`${s.source_type}-${s.source_id}`} type="button" onClick={() => addSuggested(s)}
+                                        className="flex w-full items-center justify-between rounded-md border border-gray-200 bg-white px-3 py-1.5 text-left text-sm hover:border-[#0E9F63] dark:border-gray-700 dark:bg-gray-900">
+                                        <span className="text-gray-800 dark:text-gray-200">{s.label}</span>
+                                        <span className="font-medium text-gray-600 dark:text-gray-300">+ {fcfa(s.unit_price)}</span>
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
+                    )}
 
                     <div>
                         <label className={label}>Add charges</label>

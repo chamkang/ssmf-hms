@@ -8,6 +8,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\FertilityController;
 use App\Http\Controllers\FlowBoardController;
 use App\Http\Controllers\InpatientController;
+use App\Http\Controllers\IntakeController;
 use App\Http\Controllers\MaternityController;
 use App\Http\Controllers\LabController;
 use App\Http\Controllers\LocaleController;
@@ -65,6 +66,11 @@ Route::middleware('auth')->group(function () {
         Route::get('flow-board', [FlowBoardController::class, 'index'])->name('flow-board');
         Route::post('flow-board/check-in', [FlowBoardController::class, 'checkIn'])->name('flow-board.check-in');
         Route::patch('encounters/{encounter}/advance', [FlowBoardController::class, 'advance'])->name('encounters.advance');
+
+        // Web booking intake review
+        Route::get('intake', [IntakeController::class, 'index'])->name('intake.index');
+        Route::post('intake/{intake}/convert', [IntakeController::class, 'convert'])->name('intake.convert');
+        Route::post('intake/{intake}/reject', [IntakeController::class, 'reject'])->name('intake.reject');
     });
 
     // Consultations & e-prescribing
@@ -98,6 +104,7 @@ Route::middleware('auth')->group(function () {
     Route::middleware('permission:billing.manage')->group(function () {
         Route::get('billing', [BillingController::class, 'index'])->name('billing.index');
         Route::get('billing/create', [BillingController::class, 'create'])->name('billing.create');
+        Route::get('billing/chargeable', [BillingController::class, 'chargeable'])->name('billing.chargeable');
         Route::get('billing/report', [BillingController::class, 'report'])->name('billing.report');
         Route::post('billing', [BillingController::class, 'store'])->name('billing.store');
         Route::get('billing/{invoice}', [BillingController::class, 'show'])->name('billing.show');

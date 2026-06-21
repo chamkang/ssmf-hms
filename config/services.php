@@ -45,4 +45,9 @@ return [
         'key' => env('FAPSHI_API_KEY'),
     ],
 
+    // Shared secret the public website uses to push web bookings into the HMS.
+    'intake' => [
+        'token' => env('INTAKE_TOKEN'),
+    ],
+
 ];

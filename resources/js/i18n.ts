@@ -17,6 +17,7 @@ export const messages: Record<string, Dict> = {
         'nav.patients': 'Patients',
         'nav.appointments': 'Appointments',
         'nav.flow_board': 'Flow Board',
+        'nav.intake': 'Web Bookings',
         'nav.laboratory': 'Laboratory',
         'nav.pharmacy': 'Pharmacy',
         'nav.fertility': 'Fertility',
@@ -59,6 +60,11 @@ export const messages: Record<string, Dict> = {
         'patients.phone': 'Phone',
         'patients.age': 'Age',
         'patients.sex': 'Sex',
+        'patients.record': 'Record',
+        'patients.sex_age': 'Sex / Age',
+        'patients.view': 'View',
+        'patients.none': 'No patients found.',
+        'patients.years': 'yrs',
     },
     fr: {
         // Navigation
@@ -66,6 +72,7 @@ export const messages: Record<string, Dict> = {
         'nav.patients': 'Patients',
         'nav.appointments': 'Rendez-vous',
         'nav.flow_board': 'Flux des patients',
+        'nav.intake': 'Réservations web',
         'nav.laboratory': 'Laboratoire',
         'nav.pharmacy': 'Pharmacie',
         'nav.fertility': 'Fertilité',
@@ -108,6 +115,11 @@ export const messages: Record<string, Dict> = {
         'patients.phone': 'Téléphone',
         'patients.age': 'Âge',
         'patients.sex': 'Sexe',
+        'patients.record': 'Dossier',
+        'patients.sex_age': 'Sexe / Âge',
+        'patients.view': 'Voir',
+        'patients.none': 'Aucun patient trouvé.',
+        'patients.years': 'ans',
     },
 };
 

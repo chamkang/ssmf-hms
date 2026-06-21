@@ -14,7 +14,7 @@ function Stat({ label, value, sub }: { label: string; value: string; sub?: strin
 }
 
 export default function Index({
-    month_label, revenue, appointments, new_patients_month, lab_orders_month, top_diagnoses,
+    month_label, revenue, appointments, new_patients_month, lab_orders_month, top_diagnoses, art,
 }: {
     month_label: string;
     revenue: { today: number; month: number; cash_month: number; momo_month: number };
@@ -22,6 +22,7 @@ export default function Index({
     new_patients_month: number;
     lab_orders_month: number;
     top_diagnoses: { label: string; n: number | string }[];
+    art: { total_cycles: number; transfers: number; clinical_pregnancies: number; pregnancy_rate: number; by_type: { type: string; n: number | string }[] };
 }) {
     const noShowRate = appointments.month > 0 ? Math.round((appointments.no_show / appointments.month) * 100) : 0;
 
@@ -54,6 +55,16 @@ export default function Index({
                         <Stat label="No-shows" value={String(appointments.no_show)} sub={`${noShowRate}% no-show rate`} />
                         <Stat label="New patients" value={String(new_patients_month)} />
                         <Stat label="Lab orders" value={String(lab_orders_month)} />
+                    </div>
+                </div>
+
+                <div>
+                    <h3 className="mb-2 text-sm font-semibold uppercase tracking-wide text-gray-500">Fertility / ART (all time)</h3>
+                    <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
+                        <Stat label="ART cycles" value={String(art.total_cycles)} sub={art.by_type.map((t) => `${t.type} ${t.n}`).join(' · ')} />
+                        <Stat label="Embryo transfers" value={String(art.transfers)} />
+                        <Stat label="Clinical pregnancies" value={String(art.clinical_pregnancies)} />
+                        <Stat label="Pregnancy rate" value={`${art.pregnancy_rate}%`} sub="per transfer" />
                     </div>
                 </div>
 

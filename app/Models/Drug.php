@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Drug extends Model
 {
-    protected $fillable = ['name', 'form', 'strength', 'route', 'is_active'];
+    protected $fillable = ['name', 'form', 'strength', 'route', 'price', 'is_active'];
 
     protected $casts = ['is_active' => 'boolean'];
 
