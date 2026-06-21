@@ -21,6 +21,7 @@ const NAV_ITEMS: NavItem[] = [
     { label: 'nav.flow_board', routeName: 'flow-board', activePattern: 'flow-board', permission: 'reception.queue' },
     { label: 'nav.laboratory', routeName: 'lab.index', activePattern: 'lab.*', permission: 'lab.results' },
     { label: 'nav.pharmacy', routeName: 'pharmacy.queue', activePattern: 'pharmacy.*', permission: 'pharmacy.dispense' },
+    { label: 'nav.fertility', routeName: 'fertility.index', activePattern: 'fertility.*', permission: 'fertility.manage' },
     { label: 'nav.billing', routeName: 'billing.index', activePattern: 'billing.*', permission: 'billing.manage' },
     { label: 'nav.reports', routeName: 'reports.index', activePattern: 'reports.*', permission: 'reports.view' },
     { label: 'nav.audit', routeName: 'audit.index', activePattern: 'audit.*', permission: 'audit.view' },

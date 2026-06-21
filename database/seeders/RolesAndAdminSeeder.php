@@ -32,6 +32,7 @@ class RolesAndAdminSeeder extends Seeder
             'consultations.write', 'prescriptions.write',
             'lab.results', 'pharmacy.dispense',
             'billing.manage', 'reports.view',
+            'fertility.manage',
             'users.manage', 'settings.manage', 'audit.view',
         ];
         foreach ($permissions as $p) {
@@ -43,14 +44,14 @@ class RolesAndAdminSeeder extends Seeder
 
         // Permissions per role (TRD §2 — least privilege).
         $map = [
-            'medical_director' => ['patients.view', 'patients.manage', 'appointments.manage', 'reception.queue', 'consultations.write', 'prescriptions.write', 'lab.results', 'pharmacy.dispense', 'billing.manage', 'reports.view', 'audit.view'],
-            'doctor' => ['patients.view', 'patients.manage', 'appointments.manage', 'reception.queue', 'consultations.write', 'prescriptions.write'],
+            'medical_director' => ['patients.view', 'patients.manage', 'appointments.manage', 'reception.queue', 'consultations.write', 'prescriptions.write', 'lab.results', 'pharmacy.dispense', 'billing.manage', 'reports.view', 'fertility.manage', 'audit.view'],
+            'doctor' => ['patients.view', 'patients.manage', 'appointments.manage', 'reception.queue', 'consultations.write', 'prescriptions.write', 'fertility.manage'],
             'nurse' => ['patients.view', 'appointments.manage', 'reception.queue'],
             'receptionist' => ['patients.view', 'patients.manage', 'appointments.manage', 'reception.queue', 'billing.manage'],
             'cashier' => ['patients.view', 'billing.manage', 'reports.view'],
             'laboratory' => ['patients.view', 'lab.results'],
             'pharmacist' => ['patients.view', 'pharmacy.dispense'],
-            'embryologist' => ['patients.view', 'lab.results'],
+            'embryologist' => ['patients.view', 'lab.results', 'fertility.manage'],
             'midwife' => ['patients.view', 'appointments.manage', 'reception.queue', 'consultations.write'],
             'radiographer' => ['patients.view', 'lab.results'],
         ];

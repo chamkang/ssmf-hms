@@ -5,6 +5,7 @@ use App\Http\Controllers\AuditController;
 use App\Http\Controllers\BillingController;
 use App\Http\Controllers\ConsultationController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\FertilityController;
 use App\Http\Controllers\FlowBoardController;
 use App\Http\Controllers\LabController;
 use App\Http\Controllers\LocaleController;
@@ -102,6 +103,19 @@ Route::middleware('auth')->group(function () {
         Route::post('billing/{invoice}/charge', [BillingController::class, 'charge'])->name('billing.charge');
         Route::post('billing/{invoice}/payments/{payment}/status', [BillingController::class, 'paymentStatus'])->name('billing.payment-status');
         Route::get('billing/{invoice}/receipt', [BillingController::class, 'receipt'])->name('billing.receipt');
+    });
+
+    // Fertility / ART
+    Route::middleware('permission:fertility.manage')->group(function () {
+        Route::get('fertility', [FertilityController::class, 'index'])->name('fertility.index');
+        Route::get('fertility/create', [FertilityController::class, 'create'])->name('fertility.create');
+        Route::post('fertility', [FertilityController::class, 'store'])->name('fertility.store');
+        Route::get('fertility/{fertility}', [FertilityController::class, 'show'])->name('fertility.show');
+        Route::patch('fertility/{fertility}', [FertilityController::class, 'updateCase'])->name('fertility.update');
+        Route::post('fertility/{fertility}/cycles', [FertilityController::class, 'storeCycle'])->name('fertility.cycles.store');
+        Route::patch('cycles/{cycle}', [FertilityController::class, 'updateCycle'])->name('fertility.cycles.update');
+        Route::post('cycles/{cycle}/monitorings', [FertilityController::class, 'storeMonitoring'])->name('fertility.monitorings.store');
+        Route::post('cycles/{cycle}/embryology', [FertilityController::class, 'saveEmbryology'])->name('fertility.embryology.save');
     });
 
     Route::get('reports', [ReportController::class, 'index'])->name('reports.index')->middleware('permission:reports.view');

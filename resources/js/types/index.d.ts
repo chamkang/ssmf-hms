@@ -218,6 +218,68 @@ export interface Invoice {
     payments?: Payment[];
 }
 
+export interface CycleMonitoring {
+    id: number;
+    monitored_on: string;
+    endo_mm?: number | null;
+    right_follicles?: number[] | null;
+    left_follicles?: number[] | null;
+    e2?: number | null;
+    lh?: number | null;
+    fsh?: number | null;
+    p4?: number | null;
+    note?: string | null;
+    follicle_count?: number;
+    lead_follicle?: number | null;
+}
+
+export interface EmbryologyRecord {
+    id: number;
+    retrieval_date?: string | null;
+    oocytes_retrieved?: number | null;
+    mature_mii?: number | null;
+    fertilization_method?: string | null;
+    fertilized_2pn?: number | null;
+    cleavage_day3?: number | null;
+    blastocysts?: number | null;
+    transfer_date?: string | null;
+    embryos_transferred?: number | null;
+    embryos_frozen?: number | null;
+    embryo_grade?: string | null;
+    beta_hcg?: number | null;
+    beta_hcg_date?: string | null;
+    clinical_pregnancy?: boolean | null;
+    outcome?: string | null;
+    notes?: string | null;
+}
+
+export interface ArtCycle {
+    id: number;
+    reference: string | null;
+    type: string;
+    protocol?: string | null;
+    status: string;
+    started_on?: string | null;
+    trigger_on?: string | null;
+    notes?: string | null;
+    monitorings?: CycleMonitoring[];
+    embryology?: EmbryologyRecord | null;
+}
+
+export interface FertilityCase {
+    id: number;
+    reference: string | null;
+    status: string;
+    referral_reason?: string | null;
+    diagnosis?: string | null;
+    opened_on?: string | null;
+    notes?: string | null;
+    cycles_count?: number;
+    female?: Patient;
+    male?: Patient | null;
+    cycles?: ArtCycle[];
+}
+
 export type PageProps<
     T extends Record<string, unknown> = Record<string, unknown>,
 > = T & {
