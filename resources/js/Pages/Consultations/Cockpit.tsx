@@ -20,6 +20,35 @@ interface DrugHit {
     route: string | null;
 }
 
+const SOAP_LABELS = { subjective: 'Subjective', objective: 'Objective', assessment: 'Assessment', plan: 'Plan' } as const;
+
+// Smart-phrases — quick-insert scaffolds (general + fertility-centre common cases).
+const SOAP_TEMPLATES: Record<'subjective' | 'objective' | 'assessment' | 'plan', { label: string; text: string }[]> = {
+    subjective: [
+        { label: 'No complaints', text: 'No new complaints. Feeling well.' },
+        { label: 'Pain', text: 'Pain — site: ; onset: ; character: ; severity /10; aggravating/relieving: .' },
+        { label: 'Infertility', text: 'Trying to conceive for  month(s). Cycle regular/irregular, length  days. Coital frequency: .' },
+        { label: 'ANC', text: 'Antenatal — GA  weeks. Fetal movements present. No bleeding, no leaking, no contractions.' },
+    ],
+    objective: [
+        { label: 'Normal exam', text: 'General: well, afebrile, not pale. Systemic examination unremarkable.' },
+        { label: 'Abdomen', text: 'Abdomen: soft, non-tender, no organomegaly, no masses.' },
+        { label: 'Pelvic US', text: 'Transvaginal ultrasound: uterus  ; endometrium  mm; right ovary  ; left ovary  .' },
+        { label: 'Obstetric', text: 'SFH  cm; presentation ; FHR  bpm; no oedema.' },
+    ],
+    assessment: [
+        { label: 'Stable', text: 'Clinically stable.' },
+        { label: 'Working dx', text: 'Working diagnosis: .' },
+        { label: 'Subfertility', text: 'Subfertility — likely  factor; for further workup.' },
+    ],
+    plan: [
+        { label: 'Investigations', text: 'Investigations: .' },
+        { label: 'Treatment', text: 'Treatment: . (see prescription)' },
+        { label: 'Review', text: 'Review in  with results.' },
+        { label: 'Counselled', text: 'Counselled on diagnosis and management; consent obtained; questions answered.' },
+    ],
+};
+
 export default function Cockpit({
     encounter,
     patient,
@@ -119,6 +148,10 @@ export default function Cockpit({
 
     const setVital = (k: string, v: string) => setData('vitals', { ...data.vitals, [k]: v });
 
+    // Append a smart-phrase to a SOAP field (new line if the field already has text).
+    const appendTo = (key: 'subjective' | 'objective' | 'assessment' | 'plan', text: string) =>
+        setData(key, (data[key] ? data[key] + '\n' : '') + text);
+
     const submit = (e: FormEvent) => {
         e.preventDefault();
         post(route('consultations.store'));
@@ -160,10 +193,20 @@ export default function Cockpit({
                     <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm dark:border-gray-700 dark:bg-gray-800">
                         <h3 className={sectionTitle}>Clinical note (SOAP)</h3>
                         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                            <div><label className={label}>Subjective</label><textarea rows={4} className={field} value={data.subjective} onChange={(e) => setData('subjective', e.target.value)} /></div>
-                            <div><label className={label}>Objective</label><textarea rows={4} className={field} value={data.objective} onChange={(e) => setData('objective', e.target.value)} /></div>
-                            <div><label className={label}>Assessment</label><textarea rows={4} className={field} value={data.assessment} onChange={(e) => setData('assessment', e.target.value)} /></div>
-                            <div><label className={label}>Plan</label><textarea rows={4} className={field} value={data.plan} onChange={(e) => setData('plan', e.target.value)} /></div>
+                            {(['subjective', 'objective', 'assessment', 'plan'] as const).map((key) => (
+                                <div key={key}>
+                                    <label className={label}>{SOAP_LABELS[key]}</label>
+                                    <div className="mb-1 mt-1 flex flex-wrap gap-1">
+                                        {SOAP_TEMPLATES[key].map((tpl) => (
+                                            <button type="button" key={tpl.label} onClick={() => appendTo(key, tpl.text)}
+                                                className="rounded border border-gray-200 px-2 py-0.5 text-xs text-gray-500 hover:border-[#0E9F63] hover:text-[#0E9F63] dark:border-gray-600 dark:text-gray-400">
+                                                + {tpl.label}
+                                            </button>
+                                        ))}
+                                    </div>
+                                    <textarea rows={4} className={field} value={data[key]} onChange={(e) => setData(key, e.target.value)} />
+                                </div>
+                            ))}
                         </div>
                     </div>
 

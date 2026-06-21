@@ -1,3 +1,4 @@
+import PartographChart from '@/Components/PartographChart';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Pregnancy, PageProps } from '@/types';
 import { Head, useForm, usePage } from '@inertiajs/react';
@@ -93,8 +94,9 @@ function PartographSection({ p }: { p: Pregnancy }) {
     return (
         <div className={card}>
             <h3 className="mb-3 text-sm font-semibold uppercase tracking-wide text-gray-500">Partograph (labour)</h3>
+            {entries.length > 0 && <PartographChart entries={entries} />}
             {entries.length > 0 && (
-                <div className="overflow-x-auto">
+                <div className="mt-3 overflow-x-auto">
                     <table className="min-w-full text-sm">
                         <thead className="text-left text-xs uppercase tracking-wide text-gray-500"><tr><th className="py-1 pr-3">Time</th><th className="py-1 pr-3">Cx</th><th className="py-1 pr-3">Desc.</th><th className="py-1 pr-3">FHR</th><th className="py-1 pr-3">Ctx/10</th><th className="py-1 pr-3">Liquor</th><th className="py-1 pr-3">Mould.</th></tr></thead>
                         <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
