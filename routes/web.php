@@ -7,6 +7,8 @@ use App\Http\Controllers\ConsultationController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\FertilityController;
 use App\Http\Controllers\FlowBoardController;
+use App\Http\Controllers\InpatientController;
+use App\Http\Controllers\MaternityController;
 use App\Http\Controllers\LabController;
 use App\Http\Controllers\LocaleController;
 use App\Http\Controllers\PatientController;
@@ -116,6 +118,30 @@ Route::middleware('auth')->group(function () {
         Route::patch('cycles/{cycle}', [FertilityController::class, 'updateCycle'])->name('fertility.cycles.update');
         Route::post('cycles/{cycle}/monitorings', [FertilityController::class, 'storeMonitoring'])->name('fertility.monitorings.store');
         Route::post('cycles/{cycle}/embryology', [FertilityController::class, 'saveEmbryology'])->name('fertility.embryology.save');
+    });
+
+    // Maternity / ANC
+    Route::middleware('permission:maternity.manage')->group(function () {
+        Route::get('maternity', [MaternityController::class, 'index'])->name('maternity.index');
+        Route::get('maternity/create', [MaternityController::class, 'create'])->name('maternity.create');
+        Route::post('maternity', [MaternityController::class, 'store'])->name('maternity.store');
+        Route::get('maternity/{maternity}', [MaternityController::class, 'show'])->name('maternity.show');
+        Route::patch('maternity/{maternity}', [MaternityController::class, 'update'])->name('maternity.update');
+        Route::post('maternity/{maternity}/anc', [MaternityController::class, 'storeAncVisit'])->name('maternity.anc.store');
+        Route::post('maternity/{maternity}/partograph', [MaternityController::class, 'storePartograph'])->name('maternity.partograph.store');
+        Route::post('maternity/{maternity}/delivery', [MaternityController::class, 'saveDelivery'])->name('maternity.delivery.save');
+    });
+
+    // Inpatient / IPD
+    Route::middleware('permission:inpatient.manage')->group(function () {
+        Route::get('inpatient', [InpatientController::class, 'board'])->name('inpatient.board');
+        Route::get('inpatient/admissions', [InpatientController::class, 'index'])->name('inpatient.index');
+        Route::get('inpatient/admit', [InpatientController::class, 'create'])->name('inpatient.create');
+        Route::post('inpatient', [InpatientController::class, 'store'])->name('inpatient.store');
+        Route::get('inpatient/{admission}', [InpatientController::class, 'show'])->name('inpatient.show');
+        Route::post('inpatient/{admission}/notes', [InpatientController::class, 'storeNote'])->name('inpatient.notes.store');
+        Route::patch('inpatient/{admission}/transfer', [InpatientController::class, 'transfer'])->name('inpatient.transfer');
+        Route::patch('inpatient/{admission}/discharge', [InpatientController::class, 'discharge'])->name('inpatient.discharge');
     });
 
     Route::get('reports', [ReportController::class, 'index'])->name('reports.index')->middleware('permission:reports.view');

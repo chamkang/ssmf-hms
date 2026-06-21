@@ -280,6 +280,115 @@ export interface FertilityCase {
     cycles?: ArtCycle[];
 }
 
+export interface AncVisit {
+    id: number;
+    visit_on: string;
+    ga_weeks?: number | null;
+    weight?: number | null;
+    bp_sys?: number | null;
+    bp_dia?: number | null;
+    fundal_height?: number | null;
+    fetal_heart_rate?: number | null;
+    presentation?: string | null;
+    urine_protein?: string | null;
+    urine_glucose?: string | null;
+    hb?: number | null;
+    note?: string | null;
+}
+
+export interface PartographEntry {
+    id: number;
+    recorded_at: string;
+    cervix_cm?: number | null;
+    descent?: number | null;
+    fetal_heart_rate?: number | null;
+    contractions_per10?: number | null;
+    liquor?: string | null;
+    moulding?: string | null;
+    pulse?: number | null;
+    bp_sys?: number | null;
+    bp_dia?: number | null;
+    temp?: number | null;
+    note?: string | null;
+}
+
+export interface Delivery {
+    id: number;
+    delivered_at?: string | null;
+    mode?: string | null;
+    outcome?: string | null;
+    baby_sex?: string | null;
+    birth_weight?: number | null;
+    apgar_1?: number | null;
+    apgar_5?: number | null;
+    complications?: string | null;
+    notes?: string | null;
+}
+
+export interface Pregnancy {
+    id: number;
+    reference: string | null;
+    status: string;
+    lmp?: string | null;
+    edd?: string | null;
+    ga_weeks?: number | null;
+    gravida?: number | null;
+    para?: number | null;
+    abortions?: number | null;
+    blood_group?: string | null;
+    rhesus?: string | null;
+    risk_level: string;
+    risk_factors?: string | null;
+    notes?: string | null;
+    patient?: Patient;
+    anc_visits?: AncVisit[];
+    partograph_entries?: PartographEntry[];
+    delivery?: Delivery | null;
+}
+
+export interface Ward {
+    id: number;
+    name: string;
+    kind?: string | null;
+    beds?: Bed[];
+}
+
+export interface Bed {
+    id: number;
+    ward_id: number;
+    label: string;
+    is_occupied?: boolean;
+    ward?: Ward;
+    current_admission?: Admission | null;
+}
+
+export interface AdmissionNote {
+    id: number;
+    noted_at: string;
+    kind: string;
+    note: string;
+    temp?: number | null;
+    pulse?: number | null;
+    bp_sys?: number | null;
+    bp_dia?: number | null;
+    spo2?: number | null;
+    author?: { name: string } | null;
+}
+
+export interface Admission {
+    id: number;
+    reference: string | null;
+    status: string;
+    admitted_at: string;
+    discharged_at?: string | null;
+    reason?: string | null;
+    discharge_summary?: string | null;
+    patient?: Patient;
+    bed?: Bed | null;
+    attending?: { name: string } | null;
+    notes?: AdmissionNote[];
+}
+
 export type PageProps<
     T extends Record<string, unknown> = Record<string, unknown>,
 > = T & {

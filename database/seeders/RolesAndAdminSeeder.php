@@ -32,7 +32,7 @@ class RolesAndAdminSeeder extends Seeder
             'consultations.write', 'prescriptions.write',
             'lab.results', 'pharmacy.dispense',
             'billing.manage', 'reports.view',
-            'fertility.manage',
+            'fertility.manage', 'maternity.manage', 'inpatient.manage',
             'users.manage', 'settings.manage', 'audit.view',
         ];
         foreach ($permissions as $p) {
@@ -44,15 +44,15 @@ class RolesAndAdminSeeder extends Seeder
 
         // Permissions per role (TRD §2 — least privilege).
         $map = [
-            'medical_director' => ['patients.view', 'patients.manage', 'appointments.manage', 'reception.queue', 'consultations.write', 'prescriptions.write', 'lab.results', 'pharmacy.dispense', 'billing.manage', 'reports.view', 'fertility.manage', 'audit.view'],
-            'doctor' => ['patients.view', 'patients.manage', 'appointments.manage', 'reception.queue', 'consultations.write', 'prescriptions.write', 'fertility.manage'],
-            'nurse' => ['patients.view', 'appointments.manage', 'reception.queue'],
+            'medical_director' => ['patients.view', 'patients.manage', 'appointments.manage', 'reception.queue', 'consultations.write', 'prescriptions.write', 'lab.results', 'pharmacy.dispense', 'billing.manage', 'reports.view', 'fertility.manage', 'maternity.manage', 'inpatient.manage', 'audit.view'],
+            'doctor' => ['patients.view', 'patients.manage', 'appointments.manage', 'reception.queue', 'consultations.write', 'prescriptions.write', 'fertility.manage', 'maternity.manage', 'inpatient.manage'],
+            'nurse' => ['patients.view', 'appointments.manage', 'reception.queue', 'inpatient.manage'],
             'receptionist' => ['patients.view', 'patients.manage', 'appointments.manage', 'reception.queue', 'billing.manage'],
             'cashier' => ['patients.view', 'billing.manage', 'reports.view'],
             'laboratory' => ['patients.view', 'lab.results'],
             'pharmacist' => ['patients.view', 'pharmacy.dispense'],
             'embryologist' => ['patients.view', 'lab.results', 'fertility.manage'],
-            'midwife' => ['patients.view', 'appointments.manage', 'reception.queue', 'consultations.write'],
+            'midwife' => ['patients.view', 'appointments.manage', 'reception.queue', 'consultations.write', 'maternity.manage', 'inpatient.manage'],
             'radiographer' => ['patients.view', 'lab.results'],
         ];
         foreach ($map as $role => $perms) {
