@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Invoice;
 use App\Models\Payment;
 use App\Models\Tariff;
+use App\Services\FapshiClient;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -86,6 +87,7 @@ class BillingController extends Controller
         $invoice->payments()->create([
             'method' => $data['method'],
             'provider' => $data['method'] === 'momo' ? 'fapshi' : null,
+            'status' => 'confirmed',
             'reference' => $data['reference'] ?? null,
             'amount' => $data['amount'],
             'tendered' => $data['tendered'] ?? null,
@@ -104,6 +106,92 @@ class BillingController extends Controller
         return back()->with('success', $msg);
     }
 
+    /**
+     * Push a live Mobile Money request to the patient's phone via Fapshi.
+     * When the gateway is disabled, this records a manual MoMo receipt instead.
+     */
+    public function charge(Request $request, Invoice $invoice, FapshiClient $fapshi)
+    {
+        $data = $request->validate([
+            'amount' => 'required|integer|min:1',
+            'phone' => 'required|string|max:20',
+            'reference' => 'nullable|string|max:120',
+        ]);
+
+        if ($fapshi->enabled()) {
+            try {
+                $res = $fapshi->directPay(
+                    $data['amount'],
+                    $data['phone'],
+                    $invoice->patient?->full_name,
+                    $invoice->reference ?? (string) $invoice->id,
+                );
+            } catch (\Throwable $e) {
+                return back()->with('error', $e->getMessage());
+            }
+
+            $invoice->payments()->create([
+                'method' => 'momo',
+                'provider' => 'fapshi',
+                'status' => 'pending',
+                'reference' => $res['transId'],
+                'amount' => $data['amount'],
+                'received_by' => auth()->id(),
+                'received_at' => null,
+                'raw' => $res,
+            ]);
+
+            return back()->with('success', 'Mobile Money request sent to '.$data['phone'].'. Ask the patient to approve it on their phone, then check the status.');
+        }
+
+        // Gateway off — cashier records the MoMo receipt manually.
+        $invoice->payments()->create([
+            'method' => 'momo',
+            'provider' => 'fapshi',
+            'status' => 'confirmed',
+            'reference' => $data['reference'] ?? null,
+            'amount' => $data['amount'],
+            'received_by' => auth()->id(),
+            'received_at' => now(),
+        ]);
+        $invoice->refreshStatus();
+
+        return back()->with('success', 'Mobile Money payment recorded.');
+    }
+
+    /** Poll Fapshi for a pending MoMo charge and settle it when approved. */
+    public function paymentStatus(Invoice $invoice, Payment $payment, FapshiClient $fapshi)
+    {
+        abort_unless($payment->invoice_id === $invoice->id, 404);
+
+        if ($payment->status !== 'pending' || ! $payment->reference) {
+            return back();
+        }
+
+        try {
+            $res = $fapshi->status($payment->reference);
+        } catch (\Throwable $e) {
+            return back()->with('error', $e->getMessage());
+        }
+
+        $state = strtoupper($res['status'] ?? '');
+
+        if ($state === 'SUCCESSFUL') {
+            $payment->update(['status' => 'confirmed', 'received_at' => now(), 'raw' => $res]);
+            $invoice->refreshStatus();
+
+            return back()->with('success', 'Mobile Money payment confirmed.');
+        }
+
+        if (in_array($state, ['FAILED', 'EXPIRED'], true)) {
+            $payment->update(['status' => 'failed', 'raw' => $res]);
+
+            return back()->with('error', 'Mobile Money payment '.strtolower($state).'.');
+        }
+
+        return back()->with('success', 'Still pending — ask the patient to approve the prompt on their phone.');
+    }
+
     public function receipt(Invoice $invoice)
     {
         $invoice->load(['patient', 'items', 'payments']);
@@ -114,7 +202,7 @@ class BillingController extends Controller
     public function report(Request $request)
     {
         $date = $request->query('date', now()->toDateString());
-        $payments = Payment::whereDate('received_at', $date)->get();
+        $payments = Payment::where('status', 'confirmed')->whereDate('received_at', $date)->get();
         $byMethod = $payments->groupBy('method');
         $sum = fn ($m) => (int) ($byMethod[$m]?->sum('amount') ?? 0);
         $cnt = fn ($m) => (int) ($byMethod[$m]?->count() ?? 0);

@@ -99,6 +99,8 @@ Route::middleware('auth')->group(function () {
         Route::post('billing', [BillingController::class, 'store'])->name('billing.store');
         Route::get('billing/{invoice}', [BillingController::class, 'show'])->name('billing.show');
         Route::post('billing/{invoice}/pay', [BillingController::class, 'pay'])->name('billing.pay');
+        Route::post('billing/{invoice}/charge', [BillingController::class, 'charge'])->name('billing.charge');
+        Route::post('billing/{invoice}/payments/{payment}/status', [BillingController::class, 'paymentStatus'])->name('billing.payment-status');
         Route::get('billing/{invoice}/receipt', [BillingController::class, 'receipt'])->name('billing.receipt');
     });
 

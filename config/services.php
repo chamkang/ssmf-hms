@@ -35,4 +35,14 @@ return [
         ],
     ],
 
+    // Fapshi — Cameroonian Mobile Money (MTN MoMo / Orange Money) gateway.
+    // Leave FAPSHI_ENABLED off until live keys are set; the cashier can still
+    // record MoMo and cash manually in the meantime.
+    'fapshi' => [
+        'enabled' => env('FAPSHI_ENABLED', false),
+        'base_url' => env('FAPSHI_BASE_URL', 'https://sandbox.fapshi.com'),
+        'user' => env('FAPSHI_API_USER'),
+        'key' => env('FAPSHI_API_KEY'),
+    ],
+
 ];

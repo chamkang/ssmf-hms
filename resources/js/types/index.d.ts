@@ -195,6 +195,7 @@ export interface Payment {
     id: number;
     method: string;
     provider?: string | null;
+    status?: string;
     reference?: string | null;
     amount: number;
     tendered?: number | null;

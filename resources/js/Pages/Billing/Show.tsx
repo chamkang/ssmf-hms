@@ -1,6 +1,6 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Invoice, PageProps } from '@/types';
-import { Head, Link, useForm, usePage } from '@inertiajs/react';
+import { Head, router, useForm, usePage } from '@inertiajs/react';
 import { FormEvent } from 'react';
 
 const fcfa = (n: number) => n.toLocaleString() + ' FCFA';
@@ -16,16 +16,25 @@ export default function Show({ invoice }: { invoice: Invoice }) {
         amount: invoice.balance > 0 ? invoice.balance : 0,
         tendered: '',
         reference: '',
+        phone: '',
     });
 
     const change = data.method === 'cash' && data.tendered ? Math.max(0, parseInt(data.tendered, 10) - parseInt(data.amount || 0, 10)) : 0;
-    const submit = (e: FormEvent) => { e.preventDefault(); post(route('billing.pay', invoice.id)); };
+    const submit = (e: FormEvent) => {
+        e.preventDefault();
+        // Mobile Money goes through Fapshi (live push, or a manual record when
+        // the gateway is off); cash is recorded directly.
+        post(route(data.method === 'momo' ? 'billing.charge' : 'billing.pay', invoice.id));
+    };
+    const checkStatus = (paymentId: number) =>
+        router.post(route('billing.payment-status', [invoice.id, paymentId]), {}, { preserveScroll: true });
 
     return (
         <AuthenticatedLayout header={<h2 className="text-xl font-semibold leading-tight text-gray-800 dark:text-gray-200">Invoice {invoice.reference}</h2>}>
             <Head title={invoice.reference ?? 'Invoice'} />
             <div className="mx-auto max-w-3xl space-y-5 p-4 sm:p-6 lg:p-8">
                 {flash?.success && <div className="rounded-lg bg-green-50 px-4 py-3 text-sm text-green-800 dark:bg-green-900/30 dark:text-green-200">{flash.success}</div>}
+                {flash?.error && <div className="rounded-lg bg-red-50 px-4 py-3 text-sm text-red-800 dark:bg-red-900/30 dark:text-red-200">{flash.error}</div>}
 
                 <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm dark:border-gray-700 dark:bg-gray-800">
                     <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
@@ -53,9 +62,18 @@ export default function Show({ invoice }: { invoice: Invoice }) {
                     <div className="rounded-xl border border-gray-200 bg-white p-4 text-sm shadow-sm dark:border-gray-700 dark:bg-gray-800">
                         <h3 className="mb-2 text-xs font-semibold uppercase tracking-wide text-gray-500">Payments</h3>
                         {payments.map((p) => (
-                            <div key={p.id} className="flex justify-between py-1 text-gray-700 dark:text-gray-300">
-                                <span>{p.method.toUpperCase()}{p.reference ? ` · ${p.reference}` : ''}{p.change_due ? ` · change ${fcfa(p.change_due)}` : ''}</span>
-                                <span>{fcfa(p.amount)}</span>
+                            <div key={p.id} className="flex items-center justify-between gap-2 py-1 text-gray-700 dark:text-gray-300">
+                                <span className="flex items-center gap-2">
+                                    {p.method.toUpperCase()}{p.reference ? ` · ${p.reference}` : ''}{p.change_due ? ` · change ${fcfa(p.change_due)}` : ''}
+                                    {p.status === 'pending' && <span className="rounded bg-amber-100 px-1.5 py-0.5 text-xs font-medium text-amber-800 dark:bg-amber-900/40 dark:text-amber-200">pending</span>}
+                                    {p.status === 'failed' && <span className="rounded bg-red-100 px-1.5 py-0.5 text-xs font-medium text-red-800 dark:bg-red-900/40 dark:text-red-200">failed</span>}
+                                </span>
+                                <span className="flex items-center gap-3">
+                                    {p.status === 'pending' && (
+                                        <button type="button" onClick={() => checkStatus(p.id)} className="text-xs font-medium text-[#0A3D62] hover:underline dark:text-blue-300">Check status</button>
+                                    )}
+                                    <span className={p.status === 'confirmed' ? '' : 'text-gray-400 line-through'}>{fcfa(p.amount)}</span>
+                                </span>
                             </div>
                         ))}
                     </div>
@@ -86,17 +104,26 @@ export default function Show({ invoice }: { invoice: Invoice }) {
                                     <input type="number" className="mt-1 block w-full rounded-md border-gray-300 text-sm dark:border-gray-700 dark:bg-gray-900 dark:text-gray-200" value={data.tendered} onChange={(e) => setData('tendered', e.target.value)} />
                                 </div>
                             ) : (
-                                <div>
-                                    <label className="text-xs text-gray-500">MoMo reference</label>
-                                    <input className="mt-1 block w-full rounded-md border-gray-300 text-sm dark:border-gray-700 dark:bg-gray-900 dark:text-gray-200" value={data.reference} onChange={(e) => setData('reference', e.target.value)} placeholder="Fapshi / transaction id" />
-                                </div>
+                                <>
+                                    <div>
+                                        <label className="text-xs text-gray-500">MoMo phone</label>
+                                        <input className="mt-1 block w-full rounded-md border-gray-300 text-sm dark:border-gray-700 dark:bg-gray-900 dark:text-gray-200" value={data.phone} onChange={(e) => setData('phone', e.target.value)} placeholder="6XX XXX XXX" />
+                                        {errors.phone && <p className="mt-1 text-xs text-red-500">{errors.phone}</p>}
+                                    </div>
+                                    <div className="sm:col-span-2">
+                                        <label className="text-xs text-gray-500">Reference <span className="text-gray-400">(optional)</span></label>
+                                        <input className="mt-1 block w-full rounded-md border-gray-300 text-sm dark:border-gray-700 dark:bg-gray-900 dark:text-gray-200" value={data.reference} onChange={(e) => setData('reference', e.target.value)} placeholder="Used only if you record the payment manually" />
+                                    </div>
+                                </>
                             )}
                         </div>
                         {data.method === 'cash' && data.tendered !== '' && (
                             <p className="mt-2 text-sm font-medium text-gray-700 dark:text-gray-300">Change due: <span className="text-[#0A3D62] dark:text-blue-300">{fcfa(change)}</span></p>
                         )}
                         <div className="mt-4 flex justify-end">
-                            <button disabled={processing} className="rounded-md bg-[#0E9F63] px-5 py-2 text-sm font-semibold text-white hover:bg-[#0B7F50] disabled:opacity-50">Record payment</button>
+                            <button disabled={processing} className="rounded-md bg-[#0E9F63] px-5 py-2 text-sm font-semibold text-white hover:bg-[#0B7F50] disabled:opacity-50">
+                                {data.method === 'momo' ? 'Request Mobile Money' : 'Record payment'}
+                            </button>
                         </div>
                     </form>
                 )}

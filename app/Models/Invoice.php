@@ -39,7 +39,9 @@ class Invoice extends Model implements Auditable
 
     public function getPaidAttribute(): int
     {
-        return (int) $this->payments->sum('amount');
+        // Only confirmed payments count toward the balance; a pending MoMo push
+        // is not money in hand until the patient approves it.
+        return (int) $this->payments->where('status', 'confirmed')->sum('amount');
     }
 
     public function getBalanceAttribute(): int
