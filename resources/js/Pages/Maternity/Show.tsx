@@ -1,5 +1,6 @@
 import PartographChart from '@/Components/PartographChart';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
+import { useTrans } from '@/i18n';
 import { Pregnancy, PageProps } from '@/types';
 import { Head, useForm, usePage } from '@inertiajs/react';
 import { FormEvent, useState } from 'react';
@@ -159,17 +160,19 @@ function DeliverySection({ p }: { p: Pregnancy }) {
 
 export default function Show({ pregnancy }: { pregnancy: Pregnancy }) {
     const flash = usePage<PageProps>().props.flash;
+    const { t } = useTrans();
     const [tab, setTab] = useState<'anc' | 'partograph' | 'delivery'>('anc');
+    const tabLabel = { anc: t('mat.tab_anc'), partograph: t('mat.tab_partograph'), delivery: t('mat.tab_delivery') };
     return (
-        <AuthenticatedLayout header={<h2 className="text-xl font-semibold leading-tight text-gray-800 dark:text-gray-200">Antenatal record</h2>}>
-            <Head title={pregnancy.reference ?? 'Maternity'} />
+        <AuthenticatedLayout header={<h2 className="text-xl font-semibold leading-tight text-gray-800 dark:text-gray-200">{t('mat.record_title')}</h2>}>
+            <Head title={pregnancy.reference ?? t('mat.title')} />
             <div className="mx-auto max-w-4xl space-y-5 p-4 sm:p-6 lg:p-8">
                 {flash?.success && <div className="rounded-lg bg-green-50 px-4 py-3 text-sm text-green-800 dark:bg-green-900/30 dark:text-green-200">{flash.success}</div>}
                 <Header p={pregnancy} />
                 <div className="flex gap-1">
-                    {(['anc', 'partograph', 'delivery'] as const).map((t) => (
-                        <button key={t} onClick={() => setTab(t)} className={'rounded-md px-3 py-1.5 text-sm font-medium capitalize ' + (tab === t ? 'bg-gray-800 text-white dark:bg-gray-200 dark:text-gray-900' : 'text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700')}>
-                            {t === 'anc' ? 'Antenatal' : t}
+                    {(['anc', 'partograph', 'delivery'] as const).map((k) => (
+                        <button key={k} onClick={() => setTab(k)} className={'rounded-md px-3 py-1.5 text-sm font-medium ' + (tab === k ? 'bg-gray-800 text-white dark:bg-gray-200 dark:text-gray-900' : 'text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700')}>
+                            {tabLabel[k]}
                         </button>
                     ))}
                 </div>

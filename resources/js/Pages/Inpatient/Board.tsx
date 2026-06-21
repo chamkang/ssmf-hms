@@ -1,22 +1,24 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
+import { useTrans } from '@/i18n';
 import { Ward } from '@/types';
 import { Head, Link, router } from '@inertiajs/react';
 
 export default function Board({ wards }: { wards: Ward[] }) {
+    const { t } = useTrans();
     const totalBeds = wards.reduce((s, w) => s + (w.beds?.length ?? 0), 0);
     const occupied = wards.reduce((s, w) => s + (w.beds?.filter((b) => b.current_admission).length ?? 0), 0);
 
     return (
-        <AuthenticatedLayout header={<h2 className="text-xl font-semibold leading-tight text-gray-800 dark:text-gray-200">Bed board</h2>}>
-            <Head title="Bed board" />
+        <AuthenticatedLayout header={<h2 className="text-xl font-semibold leading-tight text-gray-800 dark:text-gray-200">{t('ipd.board_title')}</h2>}>
+            <Head title={t('ipd.board_title')} />
             <div className="mx-auto max-w-6xl space-y-5 p-4 sm:p-6 lg:p-8">
                 <div className="flex flex-wrap items-center justify-between gap-3">
                     <div className="text-sm text-gray-600 dark:text-gray-300">
-                        {occupied}/{totalBeds} beds occupied · {totalBeds - occupied} free
+                        {occupied}/{totalBeds} {t('ipd.beds_occupied')} · {totalBeds - occupied} {t('ipd.free')}
                     </div>
                     <div className="flex gap-2">
-                        <Link href={route('inpatient.index')} className="rounded-md border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 dark:border-gray-600 dark:text-gray-200 dark:hover:bg-gray-800">Admissions list</Link>
-                        <Link href={route('inpatient.create')} className="rounded-md bg-[#0E9F63] px-4 py-2 text-sm font-semibold text-white hover:bg-[#0B7F50]">+ Admit patient</Link>
+                        <Link href={route('inpatient.index')} className="rounded-md border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 dark:border-gray-600 dark:text-gray-200 dark:hover:bg-gray-800">{t('ipd.admissions_list')}</Link>
+                        <Link href={route('inpatient.create')} className="rounded-md bg-[#0E9F63] px-4 py-2 text-sm font-semibold text-white hover:bg-[#0B7F50]">{t('ipd.admit')}</Link>
                     </div>
                 </div>
 
@@ -49,7 +51,7 @@ export default function Board({ wards }: { wards: Ward[] }) {
                                                 <div className="font-mono text-xs text-gray-400">{adm.patient?.mrn}</div>
                                             </div>
                                         ) : (
-                                            <div className="mt-1 text-sm text-gray-400">Free</div>
+                                            <div className="mt-1 text-sm text-gray-400">{t('ipd.bed_free')}</div>
                                         )}
                                     </div>
                                 );
@@ -60,7 +62,7 @@ export default function Board({ wards }: { wards: Ward[] }) {
                 ))}
                 {wards.length === 0 && (
                     <p className="rounded-xl border border-dashed border-gray-300 py-10 text-center text-gray-400 dark:border-gray-600">
-                        No wards configured yet. Run the WardsBedsSeeder.
+                        {t('ipd.no_wards')}
                     </p>
                 )}
             </div>

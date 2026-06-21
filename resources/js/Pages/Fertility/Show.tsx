@@ -1,5 +1,6 @@
 import CycleChart from '@/Components/CycleChart';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
+import { useTrans } from '@/i18n';
 import { ArtCycle, FertilityCase, PageProps } from '@/types';
 import { Head, useForm, usePage } from '@inertiajs/react';
 import { FormEvent, useState } from 'react';
@@ -293,24 +294,25 @@ function CycleCard({ cycle }: { cycle: ArtCycle }) {
 
 export default function Show({ case: c }: { case: FertilityCase }) {
     const flash = usePage<PageProps>().props.flash;
+    const { t } = useTrans();
     const cycles = c.cycles ?? [];
 
     return (
-        <AuthenticatedLayout header={<h2 className="text-xl font-semibold leading-tight text-gray-800 dark:text-gray-200">Fertility case</h2>}>
-            <Head title={c.reference ?? 'Fertility case'} />
+        <AuthenticatedLayout header={<h2 className="text-xl font-semibold leading-tight text-gray-800 dark:text-gray-200">{t('fert.case_title')}</h2>}>
+            <Head title={c.reference ?? t('fert.case_title')} />
             <div className="mx-auto max-w-4xl space-y-5 p-4 sm:p-6 lg:p-8">
                 {flash?.success && <div className="rounded-lg bg-green-50 px-4 py-3 text-sm text-green-800 dark:bg-green-900/30 dark:text-green-200">{flash.success}</div>}
 
                 <CaseHeader c={c} />
 
                 <div className="flex items-center justify-between">
-                    <h3 className="text-sm font-semibold uppercase tracking-wide text-gray-500">Treatment cycles</h3>
+                    <h3 className="text-sm font-semibold uppercase tracking-wide text-gray-500">{t('fert.cycles_title')}</h3>
                     <StartCycle caseId={c.id} />
                 </div>
 
                 {cycles.length === 0 ? (
                     <p className="rounded-xl border border-dashed border-gray-300 py-10 text-center text-gray-400 dark:border-gray-600">
-                        No cycles yet. Start one to begin monitoring.
+                        {t('fert.no_cycles')}
                     </p>
                 ) : (
                     cycles.map((cy) => <CycleCard key={cy.id} cycle={cy} />)

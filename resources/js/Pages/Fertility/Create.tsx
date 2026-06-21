@@ -1,6 +1,7 @@
 import InputError from '@/Components/InputError';
 import PatientPicker from '@/Components/PatientPicker';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
+import { useTrans } from '@/i18n';
 import { Head, Link, useForm } from '@inertiajs/react';
 import { FormEvent } from 'react';
 
@@ -18,6 +19,7 @@ const DIAGNOSES = [
 ];
 
 export default function Create() {
+    const { t } = useTrans();
     const { data, setData, post, processing, errors } = useForm<any>({
         female_patient_id: '',
         male_patient_id: '',
@@ -35,18 +37,18 @@ export default function Create() {
         <AuthenticatedLayout
             header={
                 <h2 className="text-xl font-semibold leading-tight text-gray-800 dark:text-gray-200">
-                    New fertility case
+                    {t('fert.create_title')}
                 </h2>
             }
         >
-            <Head title="New fertility case" />
+            <Head title={t('fert.create_title')} />
             <div className="mx-auto max-w-2xl p-4 sm:p-6 lg:p-8">
                 <form
                     onSubmit={submit}
                     className="space-y-6 rounded-xl border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-700 dark:bg-gray-800"
                 >
                     <div>
-                        <label className={label}>Female partner *</label>
+                        <label className={label}>{t('fert.female_req')}</label>
                         <PatientPicker
                             value={data.female_patient_id}
                             onChange={(id) => setData('female_patient_id', id)}
@@ -56,7 +58,7 @@ export default function Create() {
                     </div>
 
                     <div>
-                        <label className={label}>Male partner</label>
+                        <label className={label}>{t('fert.male')}</label>
                         <PatientPicker
                             value={data.male_patient_id}
                             onChange={(id) => setData('male_patient_id', id)}
@@ -66,7 +68,7 @@ export default function Create() {
                     </div>
 
                     <div>
-                        <label className={label}>Diagnosis / indication</label>
+                        <label className={label}>{t('fert.diagnosis')}</label>
                         <select
                             className={field}
                             value={data.diagnosis}
@@ -82,7 +84,7 @@ export default function Create() {
                     </div>
 
                     <div>
-                        <label className={label}>Referral reason</label>
+                        <label className={label}>{t('fert.referral')}</label>
                         <input
                             className={field}
                             value={data.referral_reason}
@@ -92,7 +94,7 @@ export default function Create() {
                     </div>
 
                     <div>
-                        <label className={label}>Notes</label>
+                        <label className={label}>{t('common.notes')}</label>
                         <textarea
                             className={field}
                             rows={3}
@@ -103,13 +105,13 @@ export default function Create() {
 
                     <div className="flex items-center justify-end gap-3">
                         <Link href={route('fertility.index')} className="text-sm text-gray-500 hover:underline">
-                            Cancel
+                            {t('action.cancel')}
                         </Link>
                         <button
                             disabled={processing || !data.female_patient_id}
                             className="rounded-md bg-[#0E9F63] px-5 py-2 text-sm font-semibold text-white hover:bg-[#0B7F50] disabled:opacity-50"
                         >
-                            Create case
+                            {t('fert.create_btn')}
                         </button>
                     </div>
                 </form>

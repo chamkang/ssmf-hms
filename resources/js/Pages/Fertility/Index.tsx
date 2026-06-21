@@ -1,4 +1,5 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
+import { useTrans } from '@/i18n';
 import { FertilityCase } from '@/types';
 import { Head, Link, router } from '@inertiajs/react';
 
@@ -17,15 +18,16 @@ export default function Index({
     cases: FertilityCase[];
     status: string;
 }) {
+    const { t } = useTrans();
     return (
         <AuthenticatedLayout
             header={
                 <h2 className="text-xl font-semibold leading-tight text-gray-800 dark:text-gray-200">
-                    Fertility cases
+                    {t('fert.cases_title')}
                 </h2>
             }
         >
-            <Head title="Fertility" />
+            <Head title={t('nav.fertility')} />
             <div className="mx-auto max-w-6xl space-y-4 p-4 sm:p-6 lg:p-8">
                 <div className="flex flex-wrap items-center justify-between gap-3">
                     <div className="flex gap-1">
@@ -36,13 +38,13 @@ export default function Index({
                                     router.get(route('fertility.index'), s === 'all' ? {} : { status: s }, { preserveState: true })
                                 }
                                 className={
-                                    'rounded-md px-3 py-1.5 text-sm font-medium capitalize ' +
+                                    'rounded-md px-3 py-1.5 text-sm font-medium ' +
                                     (status === s
                                         ? 'bg-[#0A3D62] text-white'
                                         : 'text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800')
                                 }
                             >
-                                {s}
+                                {s === 'all' ? t('common.all') : t('fert_status.' + s)}
                             </button>
                         ))}
                     </div>
@@ -50,7 +52,7 @@ export default function Index({
                         href={route('fertility.create')}
                         className="rounded-md bg-[#0E9F63] px-4 py-2 text-sm font-semibold text-white hover:bg-[#0B7F50]"
                     >
-                        + New case
+                        {t('fert.new_case')}
                     </Link>
                 </div>
 
@@ -58,12 +60,12 @@ export default function Index({
                     <table className="min-w-full text-sm">
                         <thead className="bg-gray-50 text-left text-xs uppercase tracking-wide text-gray-500 dark:bg-gray-900/40">
                             <tr>
-                                <th className="px-4 py-3">Reference</th>
-                                <th className="px-4 py-3">Female partner</th>
-                                <th className="px-4 py-3">Male partner</th>
-                                <th className="px-4 py-3">Diagnosis</th>
-                                <th className="px-4 py-3 text-center">Cycles</th>
-                                <th className="px-4 py-3">Status</th>
+                                <th className="px-4 py-3">{t('common.reference')}</th>
+                                <th className="px-4 py-3">{t('fert.col_female')}</th>
+                                <th className="px-4 py-3">{t('fert.col_male')}</th>
+                                <th className="px-4 py-3">{t('fert.col_diagnosis')}</th>
+                                <th className="px-4 py-3 text-center">{t('fert.col_cycles')}</th>
+                                <th className="px-4 py-3">{t('common.status')}</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
@@ -84,8 +86,8 @@ export default function Index({
                                     <td className="px-4 py-3 text-gray-700 dark:text-gray-300">{c.diagnosis ?? '—'}</td>
                                     <td className="px-4 py-3 text-center">{c.cycles_count ?? 0}</td>
                                     <td className="px-4 py-3">
-                                        <span className={'rounded px-2 py-0.5 text-xs font-medium capitalize ' + (badge[c.status] ?? '')}>
-                                            {c.status}
+                                        <span className={'rounded px-2 py-0.5 text-xs font-medium ' + (badge[c.status] ?? '')}>
+                                            {t('fert_status.' + c.status)}
                                         </span>
                                     </td>
                                 </tr>
@@ -93,7 +95,7 @@ export default function Index({
                             {cases.length === 0 && (
                                 <tr>
                                     <td colSpan={6} className="px-4 py-10 text-center text-gray-400">
-                                        No fertility cases yet.
+                                        {t('fert.none')}
                                     </td>
                                 </tr>
                             )}
