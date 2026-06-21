@@ -1,5 +1,6 @@
 import InputError from '@/Components/InputError';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
+import { useTrans } from '@/i18n';
 import { LabTest } from '@/types';
 import { Head, Link, useForm } from '@inertiajs/react';
 import { FormEvent, useEffect, useState } from 'react';
@@ -10,6 +11,7 @@ const field = 'mt-1 block w-full rounded-md border-gray-300 text-sm shadow-sm fo
 const label = 'block text-sm font-medium text-gray-700 dark:text-gray-300';
 
 export default function Create({ tests }: { tests: LabTest[] }) {
+    const { t } = useTrans();
     const { data, setData, post, processing, errors } = useForm<any>({
         patient_id: '', test_ids: [], notes: '',
     });
@@ -35,13 +37,13 @@ export default function Create({ tests }: { tests: LabTest[] }) {
     const submit = (e: FormEvent) => { e.preventDefault(); post(route('lab.store')); };
 
     return (
-        <AuthenticatedLayout header={<h2 className="text-xl font-semibold leading-tight text-gray-800 dark:text-gray-200">New lab order</h2>}>
-            <Head title="New lab order" />
+        <AuthenticatedLayout header={<h2 className="text-xl font-semibold leading-tight text-gray-800 dark:text-gray-200">{t('lab.create_title')}</h2>}>
+            <Head title={t('lab.create_title')} />
             <div className="mx-auto max-w-3xl p-4 sm:p-6 lg:p-8">
                 <form onSubmit={submit} className="space-y-6 rounded-xl border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-700 dark:bg-gray-800">
                     <div className="relative">
-                        <label className={label}>Patient *</label>
-                        <input className={field} value={q} placeholder="Name, record or phone…"
+                        <label className={label}>{t('appt.patient_req')}</label>
+                        <input className={field} value={q} placeholder={t('common.search_ph')}
                             onChange={(e) => { setQ(e.target.value); setPicked(null); setData('patient_id', ''); }} />
                         <InputError message={errors.patient_id} className="mt-1" />
                         {hits.length > 0 && (
@@ -58,7 +60,7 @@ export default function Create({ tests }: { tests: LabTest[] }) {
                     </div>
 
                     <div>
-                        <label className={label}>Tests *</label>
+                        <label className={label}>{t('lab.tests_req')}</label>
                         <InputError message={errors.test_ids} className="mt-1" />
                         <div className="mt-2 grid grid-cols-1 gap-1 sm:grid-cols-2">
                             {tests.map((t) => (
@@ -71,17 +73,17 @@ export default function Create({ tests }: { tests: LabTest[] }) {
                                 </label>
                             ))}
                         </div>
-                        <p className="mt-2 text-right text-sm font-medium text-gray-700 dark:text-gray-300">Total: {total.toLocaleString()} FCFA</p>
+                        <p className="mt-2 text-right text-sm font-medium text-gray-700 dark:text-gray-300">{t('common.total')}: {total.toLocaleString()} FCFA</p>
                     </div>
 
                     <div>
-                        <label className={label}>Notes</label>
+                        <label className={label}>{t('common.notes')}</label>
                         <textarea className={field} rows={2} value={data.notes} onChange={(e) => setData('notes', e.target.value)} />
                     </div>
 
                     <div className="flex items-center justify-end gap-3">
-                        <Link href={route('lab.index')} className="text-sm text-gray-500 hover:underline">Cancel</Link>
-                        <button disabled={processing || !data.patient_id || data.test_ids.length === 0} className="rounded-md bg-[#0E9F63] px-5 py-2 text-sm font-semibold text-white hover:bg-[#0B7F50] disabled:opacity-50">Create order</button>
+                        <Link href={route('lab.index')} className="text-sm text-gray-500 hover:underline">{t('action.cancel')}</Link>
+                        <button disabled={processing || !data.patient_id || data.test_ids.length === 0} className="rounded-md bg-[#0E9F63] px-5 py-2 text-sm font-semibold text-white hover:bg-[#0B7F50] disabled:opacity-50">{t('lab.create_btn')}</button>
                     </div>
                 </form>
             </div>

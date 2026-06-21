@@ -1,5 +1,6 @@
 import InputError from '@/Components/InputError';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
+import { useTrans } from '@/i18n';
 import { Doctor, Service } from '@/types';
 import { Head, Link, useForm } from '@inertiajs/react';
 import { FormEvent, useEffect, useState } from 'react';
@@ -22,6 +23,7 @@ export default function Create({
     doctors: Doctor[];
     services: Service[];
 }) {
+    const { t } = useTrans();
     const { data, setData, post, processing, errors } = useForm<any>({
         patient_id: '',
         doctor_id: '',
@@ -91,18 +93,18 @@ export default function Create({
 
     return (
         <AuthenticatedLayout
-            header={<h2 className="text-xl font-semibold leading-tight text-gray-800 dark:text-gray-200">New appointment</h2>}
+            header={<h2 className="text-xl font-semibold leading-tight text-gray-800 dark:text-gray-200">{t('appt.create_title')}</h2>}
         >
-            <Head title="New appointment" />
+            <Head title={t('appt.create_title')} />
             <div className="mx-auto max-w-3xl p-4 sm:p-6 lg:p-8">
                 <form onSubmit={submit} className="space-y-6 rounded-xl border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-700 dark:bg-gray-800">
                     {/* Patient */}
                     <div className="relative">
-                        <label className={label}>Patient *</label>
+                        <label className={label}>{t('appt.patient_req')}</label>
                         <input
                             className={field}
                             value={q}
-                            placeholder="Name, record or phone…"
+                            placeholder={t('common.search_ph')}
                             onChange={(e) => {
                                 setQ(e.target.value);
                                 setPicked(null);
@@ -122,14 +124,14 @@ export default function Create({
                             </ul>
                         )}
                         <p className="mt-1 text-xs text-gray-400">
-                            Patient not found?{' '}
-                            <Link href={route('patients.create')} className="text-[#0E9F63] hover:underline">Register a new patient</Link>.
+                            {t('appt.not_found')}{' '}
+                            <Link href={route('patients.create')} className="text-[#0E9F63] hover:underline">{t('appt.register_new')}</Link>.
                         </p>
                     </div>
 
                     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                         <div>
-                            <label className={label}>Doctor *</label>
+                            <label className={label}>{t('appt.doctor_req')}</label>
                             <select className={field} value={data.doctor_id} onChange={(e) => setData('doctor_id', e.target.value)}>
                                 <option value="">—</option>
                                 {doctors.map((d) => (
@@ -139,7 +141,7 @@ export default function Create({
                             <InputError message={errors.doctor_id} className="mt-1" />
                         </div>
                         <div>
-                            <label className={label}>Service *</label>
+                            <label className={label}>{t('appt.service_req')}</label>
                             <select className={field} value={data.service_id} onChange={(e) => setData('service_id', e.target.value)}>
                                 <option value="">—</option>
                                 {services.map((s) => (
@@ -149,7 +151,7 @@ export default function Create({
                             <InputError message={errors.service_id} className="mt-1" />
                         </div>
                         <div>
-                            <label className={label}>Date *</label>
+                            <label className={label}>{t('appt.date_req')}</label>
                             <input type="date" className={field} value={data.date} onChange={(e) => setData('date', e.target.value)} />
                             <InputError message={errors.date} className="mt-1" />
                         </div>
@@ -157,13 +159,13 @@ export default function Create({
 
                     {/* Slots */}
                     <div>
-                        <label className={label}>Time slot *</label>
+                        <label className={label}>{t('appt.timeslot_req')}</label>
                         {!data.doctor_id || !data.date ? (
-                            <p className="mt-1 text-sm text-gray-400">Choose a doctor and date.</p>
+                            <p className="mt-1 text-sm text-gray-400">{t('appt.choose_doc_date')}</p>
                         ) : loadingSlots ? (
-                            <p className="mt-1 text-sm text-gray-400">Loading slots…</p>
+                            <p className="mt-1 text-sm text-gray-400">{t('appt.loading_slots')}</p>
                         ) : slots.length === 0 ? (
-                            <p className="mt-1 text-sm text-amber-600">No slots available on that day.</p>
+                            <p className="mt-1 text-sm text-amber-600">{t('appt.no_slots')}</p>
                         ) : (
                             <div className="mt-2 flex flex-wrap gap-2">
                                 {slots.map((s) => (
@@ -182,14 +184,14 @@ export default function Create({
                     </div>
 
                     <div>
-                        <label className={label}>Notes</label>
+                        <label className={label}>{t('common.notes')}</label>
                         <textarea className={field} rows={2} value={data.notes} onChange={(e) => setData('notes', e.target.value)} />
                     </div>
 
                     <div className="flex items-center justify-end gap-3">
-                        <Link href={route('appointments.index')} className="text-sm text-gray-500 hover:underline">Cancel</Link>
+                        <Link href={route('appointments.index')} className="text-sm text-gray-500 hover:underline">{t('action.cancel')}</Link>
                         <button disabled={processing || !data.patient_id || !data.time} className="rounded-md bg-[#0E9F63] px-5 py-2 text-sm font-semibold text-white hover:bg-[#0B7F50] disabled:opacity-50">
-                            Confirm appointment
+                            {t('appt.confirm')}
                         </button>
                     </div>
                 </form>

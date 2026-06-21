@@ -1,4 +1,5 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
+import { useTrans } from '@/i18n';
 import { LabOrder, PageProps } from '@/types';
 import { Head, Link, router, useForm, usePage } from '@inertiajs/react';
 import { FormEvent } from 'react';
@@ -11,6 +12,7 @@ const flagColor: Record<string, string> = {
 
 export default function Show({ order }: { order: LabOrder }) {
     const flash = usePage<PageProps>().props.flash;
+    const { t } = useTrans();
     const items = order.items ?? [];
     const { data, setData, patch, processing } = useForm<any>({
         results: items.map((i) => ({ id: i.id, value: i.value ?? '' })),
@@ -24,22 +26,22 @@ export default function Show({ order }: { order: LabOrder }) {
     const validate = () => router.patch(route('lab.results', order.id), { results: data.results, validate: true });
 
     return (
-        <AuthenticatedLayout header={<h2 className="text-xl font-semibold leading-tight text-gray-800 dark:text-gray-200">Lab order {order.reference}</h2>}>
-            <Head title={order.reference ?? 'Lab order'} />
+        <AuthenticatedLayout header={<h2 className="text-xl font-semibold leading-tight text-gray-800 dark:text-gray-200">{t('nav.laboratory')} · {order.reference}</h2>}>
+            <Head title={order.reference ?? t('nav.laboratory')} />
             <div className="mx-auto max-w-3xl space-y-5 p-4 sm:p-6 lg:p-8">
                 {flash?.success && <div className="rounded-lg bg-green-50 px-4 py-3 text-sm text-green-800 dark:bg-green-900/30 dark:text-green-200">{flash.success}</div>}
 
                 <div className="rounded-xl border border-gray-200 bg-white p-4 text-sm shadow-sm dark:border-gray-700 dark:bg-gray-800">
                     <span className="font-medium text-gray-900 dark:text-gray-100">{order.patient?.full_name}</span>
                     <span className="ml-2 font-mono text-gray-400">{order.patient?.mrn}</span>
-                    <span className="ml-2 rounded-full bg-gray-100 px-2 py-0.5 text-xs text-gray-600 dark:bg-gray-700 dark:text-gray-300">{order.status}</span>
+                    <span className="ml-2 rounded-full bg-gray-100 px-2 py-0.5 text-xs text-gray-600 dark:bg-gray-700 dark:text-gray-300">{t('lab_status.' + order.status)}</span>
                 </div>
 
                 <form onSubmit={save} className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm dark:border-gray-700 dark:bg-gray-800">
                     <table className="min-w-full text-sm">
                         <thead>
                             <tr className="text-left text-xs uppercase tracking-wide text-gray-500">
-                                <th className="py-2">Test</th><th className="py-2">Reference</th><th className="py-2">Result</th><th className="py-2">Flag</th>
+                                <th className="py-2">{t('lab.col_test')}</th><th className="py-2">{t('common.reference')}</th><th className="py-2">{t('lab.col_result')}</th><th className="py-2">{t('lab.col_flag')}</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
@@ -62,9 +64,9 @@ export default function Show({ order }: { order: LabOrder }) {
                     </table>
 
                     <div className="mt-5 flex items-center justify-end gap-3">
-                        <Link href={route('lab.index')} className="text-sm text-gray-500 hover:underline">Back</Link>
-                        <button type="submit" disabled={processing} className="rounded-md border border-[#0A3D62] px-4 py-2 text-sm font-medium text-[#0A3D62] hover:bg-[#0A3D62] hover:text-white disabled:opacity-50">Save results</button>
-                        <button type="button" onClick={validate} disabled={processing} className="rounded-md bg-[#0E9F63] px-4 py-2 text-sm font-semibold text-white hover:bg-[#0B7F50] disabled:opacity-50">Save &amp; validate</button>
+                        <Link href={route('lab.index')} className="text-sm text-gray-500 hover:underline">{t('common.back')}</Link>
+                        <button type="submit" disabled={processing} className="rounded-md border border-[#0A3D62] px-4 py-2 text-sm font-medium text-[#0A3D62] hover:bg-[#0A3D62] hover:text-white disabled:opacity-50">{t('lab.save_results')}</button>
+                        <button type="button" onClick={validate} disabled={processing} className="rounded-md bg-[#0E9F63] px-4 py-2 text-sm font-semibold text-white hover:bg-[#0B7F50] disabled:opacity-50">{t('lab.save_validate')}</button>
                     </div>
                 </form>
             </div>
