@@ -28,6 +28,7 @@ const NAV_ITEMS: NavItem[] = [
     { label: 'nav.billing', routeName: 'billing.index', activePattern: 'billing.*', permission: 'billing.manage' },
     { label: 'nav.reports', routeName: 'reports.index', activePattern: 'reports.*', permission: 'reports.view' },
     { label: 'nav.audit', routeName: 'audit.index', activePattern: 'audit.*', permission: 'audit.view' },
+    { label: 'nav.users', routeName: 'users.index', activePattern: 'users.*', permission: 'users.manage' },
 ];
 
 function LanguageToggle() {

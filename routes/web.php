@@ -17,6 +17,7 @@ use App\Http\Controllers\PharmacyController;
 use App\Http\Controllers\PrescriptionController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ReportController;
+use App\Http\Controllers\UserController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -153,6 +154,17 @@ Route::middleware('auth')->group(function () {
 
     Route::get('reports', [ReportController::class, 'index'])->name('reports.index')->middleware('permission:reports.view');
     Route::get('audit', [AuditController::class, 'index'])->name('audit.index')->middleware('permission:audit.view');
+
+    // User management (admin)
+    Route::middleware('permission:users.manage')->group(function () {
+        Route::get('users', [UserController::class, 'index'])->name('users.index');
+        Route::get('users/create', [UserController::class, 'create'])->name('users.create');
+        Route::post('users', [UserController::class, 'store'])->name('users.store');
+        Route::get('users/{user}/edit', [UserController::class, 'edit'])->name('users.edit');
+        Route::patch('users/{user}', [UserController::class, 'update'])->name('users.update');
+        Route::post('users/{user}/reset-password', [UserController::class, 'resetPassword'])->name('users.reset-password');
+        Route::patch('users/{user}/toggle', [UserController::class, 'toggleActive'])->name('users.toggle');
+    });
 });
 
 require __DIR__.'/auth.php';
