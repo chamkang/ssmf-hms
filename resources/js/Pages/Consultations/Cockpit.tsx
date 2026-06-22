@@ -1,6 +1,7 @@
 import InputError from '@/Components/InputError';
 import PatientHeader from '@/Components/PatientHeader';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
+import { useTrans } from '@/i18n';
 import { Encounter, Patient, Vital } from '@/types';
 import { Head, Link, useForm } from '@inertiajs/react';
 import { FormEvent, useEffect, useState } from 'react';
@@ -19,8 +20,6 @@ interface DrugHit {
     label: string;
     route: string | null;
 }
-
-const SOAP_LABELS = { subjective: 'Subjective', objective: 'Objective', assessment: 'Assessment', plan: 'Plan' } as const;
 
 // Smart-phrases — quick-insert scaffolds (general + fertility-centre common cases).
 const SOAP_TEMPLATES: Record<'subjective' | 'objective' | 'assessment' | 'plan', { label: string; text: string }[]> = {
@@ -57,6 +56,7 @@ export default function Cockpit({
     patient: Patient;
     vitals?: Vital | null;
 }) {
+    const { t } = useTrans();
     const { data, setData, post, processing, errors } = useForm<any>({
         encounter_id: encounter?.id ?? null,
         patient_id: patient.id,
@@ -161,21 +161,21 @@ export default function Cockpit({
 
     return (
         <AuthenticatedLayout
-            header={<h2 className="text-xl font-semibold leading-tight text-gray-800 dark:text-gray-200">Consultation</h2>}
+            header={<h2 className="text-xl font-semibold leading-tight text-gray-800 dark:text-gray-200">{t('cons.title')}</h2>}
         >
-            <Head title={`Consultation — ${patient.full_name}`} />
+            <Head title={`${t('cons.title')} — ${patient.full_name}`} />
             <div className="mx-auto max-w-5xl space-y-5 p-4 sm:p-6 lg:p-8">
                 <PatientHeader patient={patient} />
                 {hasAllergies && (
                     <div className="rounded-lg border border-red-300 bg-red-50 px-4 py-3 text-sm font-medium text-red-800 dark:border-red-700 dark:bg-red-900/30 dark:text-red-200">
-                        ⚠ This patient has recorded allergies — review before prescribing.
+                        {t('cons.allergy_warn')}
                     </div>
                 )}
 
                 <form onSubmit={submit} className="space-y-6">
                     {/* Vitals */}
                     <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm dark:border-gray-700 dark:bg-gray-800">
-                        <h3 className={sectionTitle}>Vitals</h3>
+                        <h3 className={sectionTitle}>{t('cons.vitals')}</h3>
                         <div className="grid grid-cols-2 gap-3 sm:grid-cols-6">
                             {[
                                 ['temp', 'Temp °C'], ['bp_sys', 'BP sys'], ['bp_dia', 'BP dia'],
@@ -191,11 +191,11 @@ export default function Cockpit({
 
                     {/* SOAP */}
                     <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm dark:border-gray-700 dark:bg-gray-800">
-                        <h3 className={sectionTitle}>Clinical note (SOAP)</h3>
+                        <h3 className={sectionTitle}>{t('cons.soap')}</h3>
                         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                             {(['subjective', 'objective', 'assessment', 'plan'] as const).map((key) => (
                                 <div key={key}>
-                                    <label className={label}>{SOAP_LABELS[key]}</label>
+                                    <label className={label}>{t('soap.' + key)}</label>
                                     <div className="mb-1 mt-1 flex flex-wrap gap-1">
                                         {SOAP_TEMPLATES[key].map((tpl) => (
                                             <button type="button" key={tpl.label} onClick={() => appendTo(key, tpl.text)}
@@ -212,9 +212,9 @@ export default function Cockpit({
 
                     {/* Diagnoses */}
                     <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm dark:border-gray-700 dark:bg-gray-800">
-                        <h3 className={sectionTitle}>Diagnoses (ICD-10)</h3>
+                        <h3 className={sectionTitle}>{t('cons.dx')}</h3>
                         <div className="relative">
-                            <input className={field} placeholder="Search ICD-10 code or title…" value={icdQ}
+                            <input className={field} placeholder={t('cons.dx_search')} value={icdQ}
                                 onChange={(e) => setIcdQ(e.target.value)}
                                 onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); if (icdQ.trim()) addDx('', icdQ.trim()); } }} />
                             {icdHits.length > 0 && (
@@ -235,9 +235,9 @@ export default function Cockpit({
                                     <span className="text-gray-800 dark:text-gray-200">{d.label}</span>
                                     <span className="flex items-center gap-3">
                                         <label className="flex items-center gap-1 text-xs text-gray-500">
-                                            <input type="radio" name="primaryDx" checked={d.is_primary} onChange={() => setPrimary(i)} /> primary
+                                            <input type="radio" name="primaryDx" checked={d.is_primary} onChange={() => setPrimary(i)} /> {t('cons.primary')}
                                         </label>
-                                        <button type="button" onClick={() => removeDx(i)} className="text-xs text-red-500 hover:underline">remove</button>
+                                        <button type="button" onClick={() => removeDx(i)} className="text-xs text-red-500 hover:underline">{t('billing.remove')}</button>
                                     </span>
                                 </li>
                             ))}
@@ -246,9 +246,9 @@ export default function Cockpit({
 
                     {/* Prescription */}
                     <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm dark:border-gray-700 dark:bg-gray-800">
-                        <h3 className={sectionTitle}>Prescription</h3>
+                        <h3 className={sectionTitle}>{t('cons.rx')}</h3>
                         <div className="relative">
-                            <input className={field} placeholder="Search the drug formulary…" value={drugQ}
+                            <input className={field} placeholder={t('cons.rx_search')} value={drugQ}
                                 onChange={(e) => setDrugQ(e.target.value)}
                                 onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); if (drugQ.trim()) addItem(drugQ.trim(), null, 'oral'); } }} />
                             {drugHits.length > 0 && (
@@ -268,13 +268,13 @@ export default function Cockpit({
                                 <div key={i} className="rounded-lg border border-gray-200 p-3 dark:border-gray-700">
                                     <div className="mb-2 flex items-center justify-between">
                                         <span className="font-medium text-gray-900 dark:text-gray-100">{it.drug_text}</span>
-                                        <button type="button" onClick={() => removeItem(i)} className="text-xs text-red-500 hover:underline">remove</button>
+                                        <button type="button" onClick={() => removeItem(i)} className="text-xs text-red-500 hover:underline">{t('billing.remove')}</button>
                                     </div>
                                     <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
-                                        <input className={`${field} mt-0`} placeholder="Dose" value={it.dose} onChange={(e) => setItem(i, 'dose', e.target.value)} />
-                                        <input className={`${field} mt-0`} placeholder="Frequency" value={it.frequency} onChange={(e) => setItem(i, 'frequency', e.target.value)} />
-                                        <input className={`${field} mt-0`} placeholder="Duration" value={it.duration} onChange={(e) => setItem(i, 'duration', e.target.value)} />
-                                        <input className={`${field} mt-0`} placeholder="Instructions" value={it.instructions} onChange={(e) => setItem(i, 'instructions', e.target.value)} />
+                                        <input className={`${field} mt-0`} placeholder={t('cons.dose')} value={it.dose} onChange={(e) => setItem(i, 'dose', e.target.value)} />
+                                        <input className={`${field} mt-0`} placeholder={t('cons.frequency')} value={it.frequency} onChange={(e) => setItem(i, 'frequency', e.target.value)} />
+                                        <input className={`${field} mt-0`} placeholder={t('cons.duration')} value={it.duration} onChange={(e) => setItem(i, 'duration', e.target.value)} />
+                                        <input className={`${field} mt-0`} placeholder={t('cons.instructions')} value={it.instructions} onChange={(e) => setItem(i, 'instructions', e.target.value)} />
                                     </div>
                                 </div>
                             ))}
@@ -284,11 +284,11 @@ export default function Cockpit({
                     <div className="flex flex-wrap items-center justify-between gap-3">
                         <label className="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300">
                             <input type="checkbox" checked={data.sign} onChange={(e) => setData('sign', e.target.checked)} />
-                            Sign this consultation
+                            {t('cons.sign')}
                         </label>
                         <div className="flex items-center gap-3">
-                            <Link href={route('patients.show', patient.id)} className="text-sm text-gray-500 hover:underline">Cancel</Link>
-                            <button disabled={processing} className="rounded-md bg-[#0E9F63] px-5 py-2 text-sm font-semibold text-white hover:bg-[#0B7F50] disabled:opacity-50">Save consultation</button>
+                            <Link href={route('patients.show', patient.id)} className="text-sm text-gray-500 hover:underline">{t('action.cancel')}</Link>
+                            <button disabled={processing} className="rounded-md bg-[#0E9F63] px-5 py-2 text-sm font-semibold text-white hover:bg-[#0B7F50] disabled:opacity-50">{t('cons.save')}</button>
                         </div>
                     </div>
                     <InputError message={errors.patient_id} />

@@ -1,10 +1,12 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
+import { useTrans } from '@/i18n';
 import { PageProps } from '@/types';
 import { Head, Link, router, useForm, usePage } from '@inertiajs/react';
 import { FormEvent } from 'react';
 import PatientForm from './PatientForm';
 
 export default function Create() {
+    const { t } = useTrans();
     const { data, setData, post, processing, errors } = useForm<any>({
         first_name: '',
         last_name: '',
@@ -35,16 +37,16 @@ export default function Create() {
         <AuthenticatedLayout
             header={
                 <h2 className="text-xl font-semibold leading-tight text-gray-800 dark:text-gray-200">
-                    New patient
+                    {t('patients.create_title')}
                 </h2>
             }
         >
-            <Head title="New patient" />
+            <Head title={t('patients.create_title')} />
             <div className="mx-auto max-w-4xl p-4 sm:p-6 lg:p-8">
                 {duplicates.length > 0 && (
                     <div className="mb-5 rounded-lg border border-amber-300 bg-amber-50 p-4 text-sm dark:border-amber-700 dark:bg-amber-900/30">
                         <p className="font-semibold text-amber-800 dark:text-amber-200">
-                            Similar patient(s) already on file:
+                            {t('patients.duplicate_warn')}
                         </p>
                         <ul className="mt-2 space-y-1">
                             {duplicates.map((d) => (
@@ -56,7 +58,7 @@ export default function Create() {
                             ))}
                         </ul>
                         <button onClick={createAnyway} className="mt-3 rounded-md bg-amber-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-amber-700">
-                            Create anyway
+                            {t('patients.create_anyway')}
                         </button>
                     </div>
                 )}
@@ -65,10 +67,10 @@ export default function Create() {
                     <PatientForm data={data} setData={setData} errors={errors} />
                     <div className="mt-6 flex items-center justify-end gap-3">
                         <Link href={route('patients.index')} className="text-sm text-gray-500 hover:underline">
-                            Cancel
+                            {t('action.cancel')}
                         </Link>
                         <button disabled={processing} className="rounded-md bg-[#0E9F63] px-5 py-2 text-sm font-semibold text-white hover:bg-[#0B7F50] disabled:opacity-50">
-                            Save
+                            {t('action.save')}
                         </button>
                     </div>
                 </form>

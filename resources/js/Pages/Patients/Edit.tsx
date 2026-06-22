@@ -1,10 +1,12 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
+import { useTrans } from '@/i18n';
 import { Patient } from '@/types';
 import { Head, Link, useForm } from '@inertiajs/react';
 import { FormEvent } from 'react';
 import PatientForm from './PatientForm';
 
 export default function Edit({ patient }: { patient: Patient }) {
+    const { t } = useTrans();
     const nok = patient.next_of_kin?.[0];
     const { data, setData, put, processing, errors } = useForm<any>({
         first_name: patient.first_name,
@@ -37,20 +39,20 @@ export default function Edit({ patient }: { patient: Patient }) {
         <AuthenticatedLayout
             header={
                 <h2 className="text-xl font-semibold leading-tight text-gray-800 dark:text-gray-200">
-                    Edit — {patient.full_name}
+                    {t('patients.edit_title')} — {patient.full_name}
                 </h2>
             }
         >
-            <Head title={`Edit ${patient.full_name}`} />
+            <Head title={`${t('patients.edit_title')} ${patient.full_name}`} />
             <div className="mx-auto max-w-4xl p-4 sm:p-6 lg:p-8">
                 <form onSubmit={submit} className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-700 dark:bg-gray-800">
                     <PatientForm data={data} setData={setData} errors={errors} />
                     <div className="mt-6 flex items-center justify-end gap-3">
                         <Link href={route('patients.show', patient.id)} className="text-sm text-gray-500 hover:underline">
-                            Cancel
+                            {t('action.cancel')}
                         </Link>
                         <button disabled={processing} className="rounded-md bg-[#0E9F63] px-5 py-2 text-sm font-semibold text-white hover:bg-[#0B7F50] disabled:opacity-50">
-                            Save
+                            {t('action.save')}
                         </button>
                     </div>
                 </form>

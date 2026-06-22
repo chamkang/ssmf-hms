@@ -1,4 +1,5 @@
 import InputError from '@/Components/InputError';
+import { useTrans } from '@/i18n';
 
 interface Props {
     data: any;
@@ -11,6 +12,7 @@ const field =
 const label = 'block text-sm font-medium text-gray-700 dark:text-gray-300';
 
 export default function PatientForm({ data, setData, errors }: Props) {
+    const { t } = useTrans();
     const allergies: any[] = data.allergies ?? [];
     const setAllergy = (i: number, key: string, val: string) =>
         setData(
@@ -36,45 +38,45 @@ export default function PatientForm({ data, setData, errors }: Props) {
         <div className="space-y-8">
             <section>
                 <h3 className="mb-3 text-sm font-semibold uppercase tracking-wide text-gray-500">
-                    Identity
+                    {t('pf.identity')}
                 </h3>
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                     <div>
-                        <label className={label}>First name *</label>
+                        <label className={label}>{t('pf.first_name')}</label>
                         <input className={field} value={data.first_name} onChange={(e) => setData('first_name', e.target.value)} />
                         <InputError message={errors.first_name} className="mt-1" />
                     </div>
                     <div>
-                        <label className={label}>Last name *</label>
+                        <label className={label}>{t('pf.last_name')}</label>
                         <input className={field} value={data.last_name} onChange={(e) => setData('last_name', e.target.value)} />
                         <InputError message={errors.last_name} className="mt-1" />
                     </div>
                     <div>
-                        <label className={label}>Sex</label>
+                        <label className={label}>{t('pf.sex')}</label>
                         <select className={field} value={data.sex ?? ''} onChange={(e) => setData('sex', e.target.value)}>
                             <option value="">—</option>
-                            <option value="F">Female</option>
-                            <option value="M">Male</option>
+                            <option value="F">{t('pf.female')}</option>
+                            <option value="M">{t('pf.male')}</option>
                         </select>
                         <InputError message={errors.sex} className="mt-1" />
                     </div>
                     <div>
-                        <label className={label}>Date of birth</label>
+                        <label className={label}>{t('pf.dob')}</label>
                         <input type="date" className={field} value={data.dob ?? ''} onChange={(e) => setData('dob', e.target.value)} />
                         <InputError message={errors.dob} className="mt-1" />
                     </div>
                     <div>
-                        <label className={label}>Marital status</label>
+                        <label className={label}>{t('pf.marital')}</label>
                         <select className={field} value={data.marital_status ?? ''} onChange={(e) => setData('marital_status', e.target.value)}>
                             <option value="">—</option>
-                            <option value="single">Single</option>
-                            <option value="married">Married</option>
-                            <option value="divorced">Divorced</option>
-                            <option value="widowed">Widowed</option>
+                            <option value="single">{t('pf.single')}</option>
+                            <option value="married">{t('pf.married')}</option>
+                            <option value="divorced">{t('pf.divorced')}</option>
+                            <option value="widowed">{t('pf.widowed')}</option>
                         </select>
                     </div>
                     <div>
-                        <label className={label}>Blood group</label>
+                        <label className={label}>{t('pf.blood_group')}</label>
                         <input className={field} value={data.blood_group ?? ''} onChange={(e) => setData('blood_group', e.target.value)} placeholder="O+, A-…" />
                     </div>
                 </div>
@@ -82,21 +84,21 @@ export default function PatientForm({ data, setData, errors }: Props) {
 
             <section>
                 <h3 className="mb-3 text-sm font-semibold uppercase tracking-wide text-gray-500">
-                    Contact
+                    {t('pf.contact')}
                 </h3>
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                     <div>
-                        <label className={label}>Phone *</label>
+                        <label className={label}>{t('pf.phone_req')}</label>
                         <input className={field} value={data.phone} onChange={(e) => setData('phone', e.target.value)} placeholder="+237 6…" />
                         <InputError message={errors.phone} className="mt-1" />
                     </div>
                     <div>
-                        <label className={label}>Email</label>
+                        <label className={label}>{t('pf.email')}</label>
                         <input type="email" className={field} value={data.email ?? ''} onChange={(e) => setData('email', e.target.value)} />
                         <InputError message={errors.email} className="mt-1" />
                     </div>
                     <div className="sm:col-span-2">
-                        <label className={label}>Address</label>
+                        <label className={label}>{t('pf.address')}</label>
                         <input className={field} value={data.address ?? ''} onChange={(e) => setData('address', e.target.value)} />
                     </div>
                 </div>
@@ -105,27 +107,27 @@ export default function PatientForm({ data, setData, errors }: Props) {
             <section>
                 <div className="mb-3 flex items-center justify-between">
                     <h3 className="text-sm font-semibold uppercase tracking-wide text-gray-500">
-                        Allergies
+                        {t('pf.allergies')}
                     </h3>
                     <button type="button" onClick={addAllergy} className="text-sm font-medium text-[#0E9F63] hover:underline">
-                        + Add
+                        + {t('action.add')}
                     </button>
                 </div>
                 {allergies.length === 0 && (
-                    <p className="text-sm text-gray-400">No allergies recorded.</p>
+                    <p className="text-sm text-gray-400">{t('pf.no_allergies')}</p>
                 )}
                 <div className="space-y-2">
                     {allergies.map((a, i) => (
                         <div key={i} className="flex flex-wrap items-center gap-2">
-                            <input className={`${field} mt-0 flex-1`} placeholder="Substance" value={a.substance} onChange={(e) => setAllergy(i, 'substance', e.target.value)} />
+                            <input className={`${field} mt-0 flex-1`} placeholder={t('pf.substance')} value={a.substance} onChange={(e) => setAllergy(i, 'substance', e.target.value)} />
                             <select className={`${field} mt-0 w-44`} value={a.severity ?? ''} onChange={(e) => setAllergy(i, 'severity', e.target.value)}>
-                                <option value="">Severity…</option>
-                                <option value="mild">Mild</option>
-                                <option value="moderate">Moderate</option>
-                                <option value="severe">Severe</option>
+                                <option value="">{t('pf.severity_ph')}</option>
+                                <option value="mild">{t('pf.mild')}</option>
+                                <option value="moderate">{t('pf.moderate')}</option>
+                                <option value="severe">{t('pf.severe')}</option>
                             </select>
                             <button type="button" onClick={() => removeAllergy(i)} className="text-sm text-red-500 hover:underline">
-                                Remove
+                                {t('billing.remove') === 'retirer' ? 'Retirer' : 'Remove'}
                             </button>
                         </div>
                     ))}
@@ -134,26 +136,26 @@ export default function PatientForm({ data, setData, errors }: Props) {
 
             <section>
                 <h3 className="mb-3 text-sm font-semibold uppercase tracking-wide text-gray-500">
-                    Next of kin
+                    {t('pf.nok')}
                 </h3>
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
                     <div>
-                        <label className={label}>Name</label>
+                        <label className={label}>{t('pf.name')}</label>
                         <input className={field} value={nok.name ?? ''} onChange={(e) => setNok('name', e.target.value)} />
                     </div>
                     <div>
-                        <label className={label}>Relationship</label>
+                        <label className={label}>{t('pf.relationship')}</label>
                         <input className={field} value={nok.relationship ?? ''} onChange={(e) => setNok('relationship', e.target.value)} />
                     </div>
                     <div>
-                        <label className={label}>Phone</label>
+                        <label className={label}>{t('pf.phone')}</label>
                         <input className={field} value={nok.phone ?? ''} onChange={(e) => setNok('phone', e.target.value)} />
                     </div>
                 </div>
             </section>
 
             <section>
-                <label className={label}>Notes</label>
+                <label className={label}>{t('common.notes')}</label>
                 <textarea className={field} rows={3} value={data.notes ?? ''} onChange={(e) => setData('notes', e.target.value)} />
             </section>
         </div>
