@@ -21,5 +21,6 @@ class DatabaseSeeder extends Seeder
         $this->call(LabTestSeeder::class);
         $this->call(TariffSeeder::class);
         $this->call(WardsBedsSeeder::class);
+        $this->call(StaffUsersSeeder::class);
     }
 }

@@ -411,6 +411,7 @@ export type PageProps<
     auth: {
         user: User;
         permissions: string[];
+        role?: string | null;
     };
     locale: string;
     flash: {

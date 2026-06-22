@@ -48,9 +48,10 @@ export const messages: Record<string, Dict> = {
         'dashboard.open_invoices': 'Open invoices',
         'dashboard.pending_labs': 'Pending lab results',
         'dashboard.total_patients': 'Total patients',
-        'dashboard.new_patient': '+ New patient',
-        'dashboard.new_appointment': '+ New appointment',
+        'dashboard.new_patient': 'New patient',
+        'dashboard.new_appointment': 'New appointment',
         'dashboard.open_flow': 'Open Flow Board',
+        'dashboard.quick_actions': 'Quick actions',
         // Patients
         'patients.title': 'Patients',
         'patients.new': 'New patient',
@@ -411,7 +412,7 @@ export const messages: Record<string, Dict> = {
         // Dashboard quick links
         'dash.go_lab': 'Laboratory',
         'dash.go_pharmacy': 'Pharmacy',
-        'dash.go_billing': '+ New invoice',
+        'dash.go_billing': 'New invoice',
         'dash.go_fertility': 'Fertility',
         'dash.go_maternity': 'Maternity',
         'dash.go_inpatient': 'Bed board',
@@ -454,9 +455,10 @@ export const messages: Record<string, Dict> = {
         'dashboard.open_invoices': 'Factures ouvertes',
         'dashboard.pending_labs': 'Résultats de labo en attente',
         'dashboard.total_patients': 'Total patients',
-        'dashboard.new_patient': '+ Nouveau patient',
-        'dashboard.new_appointment': '+ Nouveau rendez-vous',
+        'dashboard.new_patient': 'Nouveau patient',
+        'dashboard.new_appointment': 'Nouveau rendez-vous',
         'dashboard.open_flow': 'Ouvrir le flux',
+        'dashboard.quick_actions': 'Actions rapides',
         // Patients
         'patients.title': 'Patients',
         'patients.new': 'Nouveau patient',
@@ -817,7 +819,7 @@ export const messages: Record<string, Dict> = {
         // Dashboard quick links
         'dash.go_lab': 'Laboratoire',
         'dash.go_pharmacy': 'Pharmacie',
-        'dash.go_billing': '+ Nouvelle facture',
+        'dash.go_billing': 'Nouvelle facture',
         'dash.go_fertility': 'Fertilité',
         'dash.go_maternity': 'Maternité',
         'dash.go_inpatient': 'Tableau des lits',
